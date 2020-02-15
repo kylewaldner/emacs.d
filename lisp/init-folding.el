@@ -4,8 +4,9 @@
 
 (when (maybe-require-package 'origami)
   (after-load 'origami
-    (define-key origami-mode-map (kbd "C-c f") 'origami-recursively-toggle-node)
-    (define-key origami-mode-map (kbd "C-c F") 'origami-toggle-all-nodes)))
+    (define-key origami-mode-map (kbd "C-c C-a") 'origami-recursively-toggle-node)
+    (define-key origami-mode-map (kbd "C-c C-A") 'origami-toggle-all-nodes))
+  (add-hook 'prog-mode-hook 'origami-mode))
 
 
 (provide 'init-folding)

@@ -127,6 +127,7 @@
 
 (require 'init-folding)
 (require 'init-dash)
+(require 'init-kyle-custom)
 
 ;;(require 'init-twitter)
 ;; (require 'init-mu)
