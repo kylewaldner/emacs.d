@@ -8,16 +8,19 @@
 (let ((gls (executable-find "gls")))
   (when gls (setq insert-directory-program gls)))
 
-;; (when (maybe-require-package 'diredfl)
-;;   (after-load 'dired
-;;     (diredfl-global-mode)
-;;     (require 'dired-x)))
+(when (maybe-require-package 'diredfl)
+  (after-load 'dired
+    (diredfl-global-mode)
+    (require 'dired-x)))
+
+;;     (define-key ctl-x-map "\C-j" nil)
+;; (define-key ctl-x-4-map "\C-j" nil)
 
 ;; Hook up dired-x global bindings without loading it up-front
 ;;(define-key ctl-x-map "\C-j" 'dired-jump)
 ;;(define-key ctl-x-4-map "\C-j" 'dired-jump-other-window)
-;;(define-key ctl-x-map "\C-j" nil)
-;;(define-key ctl-x-4-map "\C-j" nil)
+;; (define-key ctl-x-map "\C-j" nil)
+;; (define-key ctl-x-4-map "\C-j" nil)
 
 (after-load 'dired
   (setq dired-recursive-deletes 'top)

@@ -15,8 +15,28 @@
 ;; (when (maybe-require-package 'auto-highlight-symbol-mode)
 ;;   (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode))
 
-(when (maybe-require-package 'ace-jump-mode)
-  (global-set-key (kbd "C-x C-j") 'ace-jump-mode))
+
+(maybe-require-package 'ace-jump-mode)
+
+(when  (maybe-require-package 'undo-tree)
+  (global-undo-tree-mode)
+  (define-key undo-tree-map (kbd "C-x u") 'undo-tree-visualize)
+  (define-key undo-tree-map (kbd "C-/") 'undo-tree-undo))
+
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-x C-j") 'ace-jump-mode)
+    map)
+  "The my-keys-minor-mode keymap.")
+
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
+
+(my-keys-minor-mode 1)
+
+(diminish 'my-keys-minor-mode)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -57,6 +77,7 @@
   (dotimes (i num)
     (insert (format "Hello %s!\n" someone))))
 
+(maybe-require-package 'npm-mode)
 
 (provide 'init-kyle-custom)
 ;;; init-kyle-custom.el ends here

@@ -43,8 +43,9 @@
 (maybe-require-package 'magit-todos)
 
 (require-package 'fullframe)
-(after-load 'magit
-  (fullframe magit-status magit-mode-quit-window))
+;; (after-load 'magit
+;;   (fullframe magit-status magit-mode-quit-window))
+;; dont force magit status to be fullscreen
 
 (when (maybe-require-package 'git-commit)
   (add-hook 'git-commit-mode-hook 'goto-address-mode))

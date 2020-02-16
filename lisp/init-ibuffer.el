@@ -7,8 +7,10 @@
 ;;; Code:
 
 (require-package 'fullframe)
-(after-load 'ibuffer
- (fullframe ibuffer ibuffer-quit))
+;; (after-load 'ibuffer
+;;  (fullframe ibuffer ibuffer-quit))
+;; dont force buffer menu be fullscreen
+
 
 (require-package 'ibuffer-vc)
 
