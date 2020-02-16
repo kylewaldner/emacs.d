@@ -24,7 +24,7 @@
  ediff-split-window-function 'split-window-horizontally
  ediff-window-setup-function 'ediff-setup-windows-plain
  indent-tabs-mode nil
- make-backup-files nil
+ ;;  make-backup-files nil
  mouse-yank-at-point t
  save-interprogram-paste-before-kill t
  scroll-preserve-screen-position 'always
@@ -32,6 +32,14 @@
  tooltip-delay 1.5
  truncate-lines nil
  truncate-partial-width-windows nil)
+
+(setq backup-directory-alist `(("." . "~/.saves")))
+(setq backup-by-copying t)
+(setq delete-old-versions t
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t)
+
 
 (add-hook 'after-init-hook 'global-auto-revert-mode)
 (setq global-auto-revert-non-file-buffers t
