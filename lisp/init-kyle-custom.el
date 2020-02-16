@@ -25,6 +25,38 @@
   (interactive)
   (load-file "~/.emacs.d/init.el"))
 
+(require 'tramp)
+(setq tramp-default-method "ssh")
+
+(defun sudoec (&optional file)
+  "Do a sudo edit on FILE."
+  (interactive "P")
+  (if (or file (not buffer-file-name))
+      (find-file (concat "/sudo::"
+                         (ido-read-file-name "Find file(as root): "))))
+  (find-alternate-file (concat "/sudo::" buffer-file-name)))
+
+(defun kdeb ()
+  "AlL inTernAl fUnctiOnS shOuLd hAvE dOcUmeNtAtiOn."
+  (interactive)
+  (dired "/ssh:kyle@128.61.105.86#6069:/home/kyle/"))
+
+(defun skdeb ()
+  "AlL inTernAl fUnctiOnS shOuLd hAvE dOcUmeNtAtiOn."
+  (interactive)
+  (dired "/ssh:shaza@128.61.105.86#6069:/home/shaza/"))
+
+(defun doc-ment ()
+  "AlL inTernAl fUnctiOnS shOuLd hAvE dOcUmeNtAtiOn."
+  (interactive)
+  (insert "\"AlL inTernAl fUnctiOnS shOuLd hAvE dOcUmeNtAtiOn.\""))
+
+(defun multiple-hello (someone num)
+  "Say hello to SOMEONE, for NUM times."
+  (interactive "sWho do you want to say hello to? \nnHow many times? ")
+  (dotimes (i num)
+    (insert (format "Hello %s!\n" someone))))
+
 
 (provide 'init-kyle-custom)
 ;;; init-kyle-custom.el ends here
