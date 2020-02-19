@@ -81,7 +81,7 @@
   (dotimes (i num)
     (insert (format "Hello %s!\n" someone))))
 
-(maybe-require-package 'npm-mode)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (provide 'init-kyle-custom)
 ;;; init-kyle-custom.el ends here

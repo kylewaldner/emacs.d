@@ -7,6 +7,7 @@
 (maybe-require-package 'coffee-mode)
 (maybe-require-package 'typescript-mode)
 (maybe-require-package 'prettier-js)
+(maybe-require-package 'npm-mode)
 
 ;; Need to first remove from list if present, since elpa adds entries too, which
 ;; may be in an arbitrary order
@@ -30,7 +31,7 @@
   (add-hook 'js2-mode-hook 'sanityinc/enable-js2-checks-if-flycheck-inactive)
 
   (add-hook 'js2-mode-hook (lambda () (setq mode-name "JS2")))
-
+  (add-hook 'js2-mode-hook (lambda () (npm-mode (diminish 'npm-mode))))
   (js2-imenu-extras-setup))
 
 (setq-default js-indent-level 2)
