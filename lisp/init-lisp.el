@@ -10,7 +10,7 @@
 ;; custom startup screen
 (setq inhibit-splash-screen t)
 (setq initial-buffer-choice (if initial-buffer-choice
-                                (lambda () (get-buffer-create "**"))
+                                (get-buffer-create "**")
                               ()))
 (setq-default initial-scratch-message
               ;;              (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n")
