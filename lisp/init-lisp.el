@@ -15,7 +15,8 @@
 (setq-default initial-scratch-message
               ;;              (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n")
               ";; scratch buffer\n\n")
-
+(setq initial-major-mode 'lisp-interaction-mode)
+(define-key lisp-interaction-mode-map (kbd "C-x C-a") 'eval-print-last-sexp)
 
 (defun sanityinc/headerise-elisp ()
   "Add minimal header and footer to an elisp buffer in order to placate flycheck."
