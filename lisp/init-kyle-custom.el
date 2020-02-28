@@ -21,6 +21,7 @@
 
 (when  (maybe-require-package 'undo-tree)
   (global-undo-tree-mode)
+  (diminish 'undo-tree-mode)
   (define-key undo-tree-map (kbd "C-x u") 'undo-tree-visualize)
   (define-key undo-tree-map (kbd "C-/") 'undo-tree-undo))
 
