@@ -11,6 +11,9 @@
 
 (maybe-require-package 'rainbow-delimiters)
 
+(when (maybe-require-package 'multi-term)
+  (setq multi-term-program "/bin/bash"))
+;; TODO: get nice colors for multi term
 
 ;; (when (maybe-require-package 'auto-highlight-symbol-mode)
 ;;   (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode))
