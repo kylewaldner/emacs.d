@@ -1,4 +1,4 @@
-;;; init-kyle-custom --- all extra packages added by me - customizations still added in other files
+;;; init-kyle-custom.el --- all extra packages added by me - customizations still added in other files -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 
