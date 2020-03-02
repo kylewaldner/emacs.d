@@ -19,6 +19,8 @@
 
 (maybe-require-package 'ace-jump-mode)
 
+(maybe-require-package 'tern)
+
 (when  (maybe-require-package 'undo-tree)
   (global-undo-tree-mode)
   (diminish 'undo-tree-mode)
@@ -28,6 +30,12 @@
 (defvar my-keys-minor-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-x C-j") 'ace-jump-mode)
+    ;; hack since idk how to reset tern mode keybindings
+    (define-key map (kbd "C-c t r") 'tern-rename-variable)
+    (define-key map (kbd "C-c t t") 'tern-get-type)
+    (define-key map (kbd "C-c t d") 'tern-get-docs)
+    (define-key map (kbd "C-c t f") 'tern-find-definition)
+    (define-key map (kbd "C-c t b") 'tern-pop-find-definition)
     map)
   "The my-keys-minor-mode keymap.")
 
