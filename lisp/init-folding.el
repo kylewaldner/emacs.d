@@ -4,8 +4,11 @@
 
 (when (maybe-require-package 'origami)
   (after-load 'origami
-    (define-key origami-mode-map (kbd "C-c C-a") 'origami-recursively-toggle-node)
-    (define-key origami-mode-map (kbd "C-c C-A") 'origami-toggle-all-nodes))
+    ;; (define-key origami-mode-map (kbd "C-c C-a") 'origami-recursively-toggle-node)
+    ;; (define-key origami-mode-map (kbd "C-c C-A") 'origami-toggle-all-nodes)
+    ;; find better folding library in future
+    (define-key origami-mode-map (kbd "C-c [") 'origami-open-node)
+    (define-key origami-mode-map (kbd "C-c ]") 'origami-close-node))
   (add-hook 'prog-mode-hook 'origami-mode))
 
 
