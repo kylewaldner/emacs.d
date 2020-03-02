@@ -28,6 +28,9 @@
     (unless (flycheck-get-checker-for-buffer)
       (setq-local js2-mode-show-parse-errors t)
       (setq-local js2-mode-show-strict-warnings t)))
+  (when (maybe-require-package 'tern)
+    ;; redo all tern keybindings
+    (add-hook 'js2-mode-hook (lambda () (tern-mode t))))
   (add-hook 'js2-mode-hook 'sanityinc/enable-js2-checks-if-flycheck-inactive)
 
   (add-hook 'js2-mode-hook (lambda () (setq mode-name "JS2")))

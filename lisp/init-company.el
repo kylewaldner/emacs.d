@@ -8,14 +8,17 @@
 (setq tab-always-indent 'complete)
 (add-to-list 'completion-styles 'initials t)
 
-(maybe-require-package 'company-restclient)
 
 (when (maybe-require-package 'company)
   (add-hook 'after-init-hook 'global-company-mode)
   (after-load 'company
     (dolist (backend '(company-eclim company-semantic))
       (delq backend company-backends))
-    (add-to-list 'company-backends 'company-restclient)
+    (when (maybe-require-package 'company-restclient)
+      (add-to-list 'company-backends 'company-restclient))
+    (when (maybe-require-package 'company-tern)
+      (add-to-list 'company-backends 'company-tern)
+      (setq company-tern-property-maker " <p>"))
     (diminish 'company-mode)
     (define-key company-mode-map (kbd "M-/") 'company-complete)
     (define-key company-active-map (kbd "M-/") 'company-other-backend)
