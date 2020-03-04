@@ -1,23 +1,12 @@
-[![Build Status](https://travis-ci.org/purcell/emacs.d.svg?branch=master)](https://travis-ci.org/purcell/emacs.d)
+[this repo is a fork](https://github.com/purcell/emacs.d)
 
 # important notes
 install ag (silversurfer) on system to use ag for search
+install tern (using npm) for nodejs development
 
 
+# Languages
 
-
-
-# A reasonable Emacs config
-
-This is my emacs configuration tree, continually used and tweaked
-since 2000, and it may be a good starting point for other Emacs
-users, especially web developers. These days it's
-somewhat geared towards OS X, but it is known to also work on Linux
-and Windows.
-
-Emacs itself comes with support for many programming languages. This
-config adds improved defaults and extended support for the following, listed
-in the approximate order of how much I use them, from most to least:
 
 * Haskell / Purescript / Elm
 * Ruby / Ruby on Rails
@@ -98,7 +87,7 @@ customize-themes</kbd> etc. and/or create a file
 If you need initialisation code which executes earlier in the startup process,
 you can also create an `~/.emacs.d/lisp/init-preload-local.el` file.
 
-If you plan to customize things more extensively, you should probably
+pIf you plan to customize things more extensively, you should probably
 just fork the repo and hack away at the config to make it your own!
 Remember to regularly merge in changes from this repo, so that your
 config remains compatible with the latest package and Emacs versions.
@@ -109,23 +98,3 @@ this configuration.*
 ## Similar configs
 
 You might also want to check out `emacs-starter-kit` and `prelude`.
-
-## Support / issues
-
-If you hit any problems, please first ensure that you are using the latest version
-of this code, and that you have updated your packages to the most recent available
-versions (see "Updates" above). If you still experience problems, go ahead and
-[file an issue on the github project](https://github.com/purcell/emacs.d).
-
--Steve Purcell
-
-<hr>
-
-
-[💝 Support this project and my other Open Source work](https://www.patreon.com/sanityinc)
-
-[💼 LinkedIn profile](https://uk.linkedin.com/in/stevepurcell)
-
-[✍ sanityinc.com](http://www.sanityinc.com/)
-
-[🐦 @sanityinc](https://twitter.com/sanityinc)
