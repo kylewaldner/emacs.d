@@ -30,26 +30,6 @@
   (define-key undo-tree-map (kbd "C-x u") 'undo-tree-visualize)
   (define-key undo-tree-map (kbd "C-/") 'undo-tree-undo))
 
-(defvar my-keys-minor-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-x C-j") 'ace-jump-mode)
-    ;; hack since idk how to reset tern mode keybindings
-    (define-key map (kbd "C-c t r") 'tern-rename-variable)
-    (define-key map (kbd "C-c t t") 'tern-get-type)
-    (define-key map (kbd "C-c t d") 'tern-get-docs)
-    (define-key map (kbd "C-c t f") 'tern-find-definition)
-    (define-key map (kbd "C-c t b") 'tern-pop-find-definition)
-    map)
-  "The my-keys-minor-mode keymap.")
-
-(define-minor-mode my-keys-minor-mode
-  "A minor mode so that my key settings override annoying major modes."
-  :init-value t
-  :lighter " my-keys")
-
-(my-keys-minor-mode 1)
-
-(diminish 'my-keys-minor-mode)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -93,6 +73,53 @@
   (interactive "sWho do you want to say hello to? \nnHow many times? ")
   (dotimes (i num)
     (insert (format "Hello %s!\n" someone))))
+
+(defun toggle-comment-on-line ()
+  "Comment or uncomment current line."
+  (interactive)
+  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+
+(defun comment-or-uncomment-region-or-line ()
+  "Comments or uncomments the region or the current line if there's no active region."
+  (interactive)
+  (if (region-active-p)
+      (comment-or-uncomment-region (region-beginning) (region-end))
+    (comment-or-uncomment-region (line-beginning-position) (line-end-position))))
+
+(defun comment-or-uncomment-region-or-line-and-jump ()
+  "Comments or uncomments the region or the current line if there's no active region."
+  (interactive)
+  (comment-or-uncomment-region-or-line)
+  (if (region-active-p)
+      ;; (message "end of region is %d" (region-end))
+      (goto-char (region-end)))
+  (forward-line))
+
+
+;; global custom keys
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-x C-j") 'ace-jump-mode)
+    ;; hack since idk how to reset tern mode keybindings
+    (define-key map (kbd "C-c t r") 'tern-rename-variable)
+    (define-key map (kbd "C-c t t") 'tern-get-type)
+    (define-key map (kbd "C-c t d") 'tern-get-docs)
+    (define-key map (kbd "C-c t f") 'tern-find-definition)
+    (define-key map (kbd "C-c t b") 'tern-pop-find-definition)
+    (define-key map (kbd "C-'") 'comment-or-uncomment-region-or-line)
+    (define-key map (kbd "C-c '") 'comment-or-uncomment-region-or-line-and-jump)
+    map)
+  "The my-keys-minor-mode keymap.")
+
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
+
+(my-keys-minor-mode 1)
+
+(diminish 'my-keys-minor-mode)
+
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
