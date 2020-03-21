@@ -95,6 +95,15 @@
       (goto-char (region-end)))
   (forward-line))
 
+(defun ag-ignore (input-string)
+  "Write the list of file/directory names to the home .agignore.  INPUT-STRING."
+  (interactive "slist of comma separated files/directories:")
+  (write-region (mapconcat 'identity (split-string input-string ",") "\n") nil "~/.agignore"))
+
+(defun ag-clear-ignore ()
+  "Clears the .agignore file."
+  (interactive)
+  (write-region "" nil "~/.agignore"))
 
 ;; global custom keys
 (defvar my-keys-minor-mode-map
