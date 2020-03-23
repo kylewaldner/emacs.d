@@ -18,7 +18,6 @@
 ;; (when (maybe-require-package 'auto-highlight-symbol-mode)
 ;;   (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode))
 
-(maybe-require-package 'restclient)
 
 (maybe-require-package 'ace-jump-mode)
 
