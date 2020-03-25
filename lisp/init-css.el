@@ -66,6 +66,11 @@
 (autoload 'turn-on-css-eldoc "css-eldoc")
 (add-hook 'css-mode-hook 'turn-on-css-eldoc)
 
+
+;;; css indent
+(add-hook 'css-mode-hook
+          (lambda ()
+            (setq css-indent-offset 2)))
 
 (provide 'init-css)
 ;;; init-css.el ends here
