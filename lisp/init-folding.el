@@ -20,5 +20,7 @@
 
 (add-hook 'prog-mode-hook 'hs-minor-mode)
 
+(diminish 'hs-minor-mode)
+
 (provide 'init-folding)
 ;;; init-folding.el ends here
