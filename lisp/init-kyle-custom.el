@@ -131,5 +131,7 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+(setq redisplay-dont-pause t)
+
 (provide 'init-kyle-custom)
 ;;; init-kyle-custom.el ends here
