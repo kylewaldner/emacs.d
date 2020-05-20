@@ -20,6 +20,7 @@
       (add-to-list 'company-backends 'company-tern)
       (setq company-tern-property-maker " <p>"))
     (diminish 'company-mode)
+    (setq company-global-modes '(not eshell-mode shell-mode term-mode))
     (define-key company-mode-map (kbd "M-/") 'company-complete)
     (define-key company-active-map (kbd "M-/") 'company-other-backend)
     (define-key company-active-map (kbd "C-n") 'company-select-next)
