@@ -94,15 +94,27 @@
       (goto-char (region-end)))
   (forward-line))
 
+(defun read-lines (file-path)
+  "Return a list of lines of a file at FILE-PATH."
+  (with-temp-buffer
+    (insert-file-contents file-path)
+    (split-string (buffer-string) "\n" t)))
+
+(defun ag-ignore-setup ()
+  "Setup hook for ag-ignore."
+  (insert (mapconcat 'identity (read-lines "~/.agignore") ", ")))
+
 (defun ag-ignore (input-string)
   "Write the list of file/directory names to the home .agignore.  INPUT-STRING."
   (interactive "slist of comma separated files/directories:")
-  (write-region (mapconcat 'identity (split-string input-string ",") "\n") nil "~/.agignore"))
+  (add-hook 'minibuffer-setup-hook 'ag-ignore-setup)
+  (write-region (mapconcat 'identity (split-string input-string ",\s?") "\n") nil "~/.agignore"))
 
 (defun ag-clear-ignore ()
   "Clears the .agignore file."
   (interactive)
   (write-region "" nil "~/.agignore"))
+
 
 ;; global custom keys
 (defvar my-keys-minor-mode-map
