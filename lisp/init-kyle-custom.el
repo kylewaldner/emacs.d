@@ -131,6 +131,17 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+
+;; open large files in fundamental mode
+(defun my-find-file-check-make-large-file-read-only-hook ()
+  "If a file is over a given size, make the buffer read only."
+  (when (> (buffer-size) (* 1024 1024))
+    (setq buffer-read-only t)
+    (buffer-disable-undo)
+    (fundamental-mode)))
+
+(add-hook 'find-file-hook 'my-find-file-check-make-large-file-read-only-hook)
+
 (setq redisplay-dont-pause t)
 
 (provide 'init-kyle-custom)
