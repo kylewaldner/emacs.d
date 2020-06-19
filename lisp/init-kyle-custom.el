@@ -101,13 +101,17 @@
     (split-string (buffer-string) "\n" t)))
 
 (defun ag-ignore-setup ()
-  "Setup hook for ag-ignore."
-  (insert (mapconcat 'identity (read-lines "~/.agignore") ", ")))
+  "Setup hook for ag-ignore.  Insert contents of .agignore into minibuffer if running agignore."
+  (if (eq this-command 'ag-ignore)
+      (insert (mapconcat 'identity (read-lines "~/.agignore") ", "))))
+
+;; add special hook to minibuffer to improve ag-ignore
+(add-hook 'minibuffer-setup-hook 'ag-ignore-setup)
+
 
 (defun ag-ignore (input-string)
   "Write the list of file/directory names to the home .agignore.  INPUT-STRING."
   (interactive "slist of comma separated files/directories:")
-  (add-hook 'minibuffer-setup-hook 'ag-ignore-setup)
   (write-region (mapconcat 'identity (split-string input-string ",\s?") "\n") nil "~/.agignore"))
 
 (defun ag-clear-ignore ()
