@@ -1,8 +1,9 @@
 [this repo is a fork](https://github.com/purcell/emacs.d)
 
 # important notes
-install ag (silversurfer) on system to use ag for search
-install tern (using npm) for nodejs development
+install ag (silversearcher) on system to use ag for search
+install tern and eslint (using npm) for nodejs development
+`npm i -g eslint eslint-plugin-import eslint-config-airbnb-base eslint-plugin-json tern`
 
 
 # Languages
