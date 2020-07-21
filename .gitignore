@@ -19,7 +19,6 @@ cookies
 \#*
 /elpa
 /elpa-*
-!/elpa-27.0/company-tern-20161004.1847
 site-lisp/package/
 /swank
 /.mc-lists.el
