@@ -16,7 +16,7 @@
       (delq backend company-backends))
     (when (maybe-require-package 'company-restclient)
       (add-to-list 'company-backends 'company-restclient))
-    (when (maybe-require-package 'company-tern)
+    (when (require 'company-tern)
       (add-to-list 'company-backends 'company-tern)
       (setq company-tern-property-maker " <p>"))
     (diminish 'company-mode)

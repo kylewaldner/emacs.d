@@ -69,6 +69,12 @@
 (require 'init-smex)
 (require 'init-ivy)
 (require 'init-hippie-expand)
+
+;; manually load company-tern package that is stored locally
+(load-file "~/.emacs.d/manual-installs/company-tern/company-tern-autoloads.el")
+
+
+
 (require 'init-company)
 (require 'init-windows)
 (require 'init-sessions)
