@@ -98,6 +98,7 @@
 (require 'init-erlang)
 (require 'init-javascript)
 (require 'init-scala)
+(require 'init-jade)
 (require 'init-php)
 (require 'init-org)
 (require 'init-nxml)
