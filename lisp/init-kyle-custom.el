@@ -19,8 +19,6 @@
 ;;   (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode))
 
 
-(maybe-require-package 'ace-jump-mode)
-
 (maybe-require-package 'tern)
 
 (when  (maybe-require-package 'undo-tree)
@@ -123,7 +121,7 @@
 ;; global custom keys
 (defvar my-keys-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-x C-j") 'ace-jump-mode)
+    ;; (define-key map (kbd "C-x C-j") 'ace-jump-mode)
     (define-key map (kbd "C-'") 'comment-or-uncomment-region-or-line)
     (define-key map (kbd "C-c '") 'comment-or-uncomment-region-or-line-and-jump)
     map)

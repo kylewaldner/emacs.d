@@ -186,7 +186,10 @@
 (global-set-key (kbd "C-x C-.") 'pop-global-mark)
 
 (when (maybe-require-package 'avy)
-  (global-set-key (kbd "C-;") 'avy-goto-char-timer))
+  (global-set-key (kbd "M-;") 'avy-goto-char-timer)
+  (global-set-key (kbd "C-M-;") 'avy-goto-line)
+  (global-set-key (kbd "C-;") 'avy-goto-word-1)
+  (setq avy-all-windows nil))
 
 (require-package 'multiple-cursors)
 ;; multiple-cursors
@@ -199,12 +202,6 @@
 (global-set-key (kbd "C-c m c") 'mc/edit-lines)
 (global-set-key (kbd "C-c m e") 'mc/edit-ends-of-lines)
 (global-set-key (kbd "C-c m a") 'mc/edit-beginnings-of-lines)
-
-
-;; Train myself to use M-f and M-b instead
-(global-unset-key [M-left])
-(global-unset-key [M-right])
-
 
 
 (defun kill-back-to-indentation ()
