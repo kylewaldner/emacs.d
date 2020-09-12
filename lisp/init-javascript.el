@@ -2,19 +2,26 @@
 ;;; Commentary:
 ;;; Code:
 
-(maybe-require-package 'json-mode)
 (maybe-require-package 'js2-mode)
 (maybe-require-package 'coffee-mode)
 (maybe-require-package 'typescript-mode)
 (maybe-require-package 'prettier-js)
 (maybe-require-package 'web-mode)
 (maybe-require-package 'npm-mode)
+(maybe-require-package 'rjsx-mode)
+
+(when (maybe-require-package 'json-mode)
+  (add-hook 'json-mode-hook
+            (lambda ()
+              (make-local-variable 'js-indent-level)
+              (setq js-indent-level 2))))
 
 ;; Need to first remove from list if present, since elpa adds entries too, which
 ;; may be in an arbitrary order
 
 (add-to-list 'auto-mode-alist '("\\.\\(js\\|es6\\)\\(\\.erb\\)?\\'" . js2-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
 
 ;; js2-mode
 
@@ -38,6 +45,8 @@
   (add-hook 'js2-mode-hook (lambda () (setq mode-name "JS2")))
   (add-hook 'js2-mode-hook (lambda () (npm-mode (diminish 'npm-mode))))
   (js2-imenu-extras-setup))
+(after-load 'rjsx-mode
+  (add-hook 'rjsx-mode-hook 'prettier-js-mode))
 
 (setq-default js-indent-level 2)
 ;; In Emacs >= 25, the following is an alias for js-indent-level anyway
