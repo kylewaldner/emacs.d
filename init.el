@@ -98,7 +98,6 @@
 (require 'init-erlang)
 (require 'init-javascript)
 (require 'init-engine)
-(require 'init-scala)
 (require 'init-jade)
 (require 'init-php)
 (require 'init-org)
@@ -136,6 +135,7 @@
 
 (require 'init-folding)
 (require 'init-dash)
+(require 'init-scala)
 (require 'init-kyle-custom)
 
 ;;(require 'init-twitter)
