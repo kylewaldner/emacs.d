@@ -97,6 +97,7 @@
 (require 'init-csv)
 (require 'init-erlang)
 (require 'init-javascript)
+(require 'init-engine)
 (require 'init-scala)
 (require 'init-jade)
 (require 'init-php)
