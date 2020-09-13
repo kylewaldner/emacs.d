@@ -23,5 +23,16 @@
   (add-hook lsp-mode-hook 'dap-mode)
   (add-hook lsp-mode-hook 'dap-ui-mode))
 
+;; curl -L -o coursier https://git.io/coursier-cli
+;; chmod +x coursier
+;; ./coursier bootstrap \
+;; --java-opt -Xss4m \
+;; --java-opt -Xms100m \
+;; --java-opt -Dmetals.client=emacs \
+;; org.scalameta:metals_2.12:0.9.3 \
+;; -r bintray:scalacenter/releases \
+;; -r sonatype:snapshots \
+;; -o /usr/local/bin/metals-emacs -f
+
 (provide 'init-scala)
 ;;; init-scala.el ends here
