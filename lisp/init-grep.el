@@ -22,6 +22,7 @@
 (when (and (executable-find "ag")
            (maybe-require-package 'ag))
   (maybe-require-package 'wgrep-ag)
+  (setq ag-arguments (list "--stats" "--smart-case" "-W" "100"))
   ;; C-C C-p to change to wgrep mode
   (setq-default ag-highlight-search t)
   ;; (search-refresh-key ag-mode-map) ;; ag-mode-map does not exist
