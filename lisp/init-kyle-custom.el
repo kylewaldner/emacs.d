@@ -9,8 +9,6 @@
 ;; other things, fix the window swtiching letter thing
 ;; less auto-complete delay
 
-(maybe-require-package 'rainbow-delimiters)
-
 (when (maybe-require-package 'multi-term)
   (setq multi-term-program "/bin/bash"))
 ;; TODO: get nice colors for multi term

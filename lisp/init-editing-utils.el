@@ -178,6 +178,10 @@
 ;;----------------------------------------------------------------------------
 (cua-selection-mode t)                  ; for rectangles, CUA is nice
 
+;; C-h k C-RET to see prev binding
+;; disable cua rectangle keybinding - which breaks everything
+(define-key cua-global-keymap [C-return] nil)
+
 
 ;;----------------------------------------------------------------------------
 ;; Handy key bindings
