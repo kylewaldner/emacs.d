@@ -15,7 +15,31 @@
 
 (setq python-shell-interpreter "python3")
 
+(setq python-indent-offset 2)
+
 (require-package 'pip-requirements)
+
+(when (maybe-require-package 'elpy)
+  (elpy-enable)
+  (after-load 'flycheck
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (add-hook 'elpy-mode-hook 'flycheck-mode)
+    (when (maybe-require-package 'py-autopep8)
+      (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+      (add-hook 'after-save-hook (lambda ()
+                                   (if (eq major-mode 'python-mode)
+                                       (elpy-autopep8-fix-code)))))))
+
+;; py-autopep8 is other option
+;; blacken is better since it runs inside emacs
+
+
+;; (when (maybe-require-package 'blacken)
+;;   (add-hook 'python-mode-hook 'blacken-mode))
+
+;;; C-c C-c to bring up python buffer for file
+;;; M-x pyvenv-workon to choose existing python virtualenv
+
 
 (when (maybe-require-package 'anaconda-mode)
   (after-load 'python
