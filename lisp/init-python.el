@@ -19,11 +19,14 @@
 
 (require-package 'pip-requirements)
 
+(require-package 'jedi)
+
 (when (maybe-require-package 'elpy)
   (elpy-enable)
   (after-load 'flycheck
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
     (add-hook 'elpy-mode-hook 'flycheck-mode)
+    (setq elpy-rpc-python-command "python3")
     (when (maybe-require-package 'py-autopep8)
       (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
       (add-hook 'after-save-hook (lambda ()
@@ -37,7 +40,7 @@
 ;; (when (maybe-require-package 'blacken)
 ;;   (add-hook 'python-mode-hook 'blacken-mode))
 
-;;; C-c C-c to bring up python buffer for file
+;;; C-c C-c to bring up python buffer for buffer or region
 ;;; M-x pyvenv-workon to choose existing python virtualenv
 
 
