@@ -16,6 +16,23 @@
               (make-local-variable 'js-indent-level)
               (setq js-indent-level 2))))
 
+(defun kyle/js-doc-in-document-p (p)
+  "Return t when the point P is in JsDoc document."
+  (save-excursion
+    (goto-char p)
+    (and (search-backward "/**" nil t)
+         (not (search-forward "*/" p t)))))
+(defun kyle/js-doc-newline-and-indent (&optional arg)
+  "Does 'newline-and-indent' and inserts a start and space after, to make editing jsDocs easier.  uses ARG so the function matches the original 'newline-and-indent'."
+  (interactive "*p")
+  (delete-horizontal-space t)
+  (unless arg
+    (setq arg 1))
+  (dotimes (_ arg)
+    (newline nil t)
+    (indent-according-to-mode)
+    (insert "* ")))
+
 ;; Need to first remove from list if present, since elpa adds entries too, which
 ;; may be in an arbitrary order
 
@@ -41,6 +58,26 @@
     ;; redo all tern keybindings
     (add-hook 'js2-mode-hook (lambda () (tern-mode t))))
   (add-hook 'js2-mode-hook 'sanityinc/enable-js2-checks-if-flycheck-inactive)
+  (when (maybe-require-package 'nodejs-repl)
+    (add-hook 'js-mode-hook
+              (lambda ()
+                (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-expression)
+                (define-key js-mode-map (kbd "C-c C-j") 'nodejs-repl-send-line)
+                (define-key js-mode-map (kbd "C-c C-r") 'nodejs-repl-send-region)
+                (define-key js-mode-map (kbd "C-c C-c") 'nodejs-repl-send-buffer)
+                (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
+                (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl))))
+  (when (maybe-require-package 'js-doc)
+    (add-hook 'js2-mode-hook
+              (lambda ()
+                (define-key js2-mode-map (kbd "C-c i") 'js-doc-insert-function-doc)
+                (define-key js2-mode-map (kbd "@") 'js-doc-insert-tag)
+                (define-key js2-mode-map (kbd "RET")
+                  (lambda ()
+                    (interactive) (if (kyle/js-doc-in-document-p (point))
+                                      (kyle/js-doc-newline-and-indent)
+                                    (newline-and-indent))))
+                )))
 
   (add-hook 'js2-mode-hook (lambda () (setq mode-name "JS2")))
   (add-hook 'js2-mode-hook (lambda () (npm-mode (diminish 'npm-mode))))
