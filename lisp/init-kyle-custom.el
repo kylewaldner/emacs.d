@@ -96,10 +96,17 @@
     (insert-file-contents file-path)
     (split-string (buffer-string) "\n" t)))
 
+;; hasck to make ag-ignore work better
+(defvar kyle/ag-ignore-ready t)
+
 (defun ag-ignore-setup ()
   "Setup hook for ag-ignore.  Insert contents of .agignore into minibuffer if running agignore."
-  (if (eq this-command 'ag-ignore)
-      (insert (mapconcat 'identity (read-lines "~/.agignore") ", "))))
+  (if (and (eq this-command 'ag-ignore) kyle/ag-ignore-ready)
+      (progn
+        (setq kyle/ag-ignore-ready nil)
+        (insert (mapconcat 'identity (read-lines "~/.agignore") ", "))
+        )
+    (setq kyle/ag-ignore-ready t)))
 
 ;; add special hook to minibuffer to improve ag-ignore
 (add-hook 'minibuffer-setup-hook 'ag-ignore-setup)
