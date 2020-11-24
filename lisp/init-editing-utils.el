@@ -258,6 +258,8 @@
 
 (global-set-key [remap backward-up-list] 'sanityinc/backward-up-sexp) ; C-M-u, C-M-up
 
+(global-set-key (kbd "C-M-n") 'paredit-forward-up)
+
 
 ;;----------------------------------------------------------------------------
 ;; Cut/copy the current line if no region is active
