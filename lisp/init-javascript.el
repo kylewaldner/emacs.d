@@ -22,16 +22,6 @@
     (goto-char p)
     (and (search-backward "/**" nil t)
          (not (search-forward "*/" p t)))))
-(defun kyle/js-doc-newline-and-indent (&optional arg)
-  "Does 'newline-and-indent' and inserts a start and space after, to make editing jsDocs easier.  uses ARG so the function matches the original 'newline-and-indent'."
-  (interactive "*p")
-  (delete-horizontal-space t)
-  (unless arg
-    (setq arg 1))
-  (dotimes (_ arg)
-    (newline nil t)
-    (indent-according-to-mode)
-    (insert "* ")))
 
 ;; Need to first remove from list if present, since elpa adds entries too, which
 ;; may be in an arbitrary order
@@ -75,7 +65,9 @@
                 (define-key js2-mode-map (kbd "RET")
                   (lambda ()
                     (interactive) (if (kyle/js-doc-in-document-p (point))
-                                      (kyle/js-doc-newline-and-indent)
+                                      (progn
+                                        (newline-and-indent)
+                                        (insert "* "))
                                     (newline-and-indent))))
                 )))
 
