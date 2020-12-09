@@ -9,6 +9,36 @@
   (when (maybe-require-package 'flycheck-color-mode-line)
     (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
 
+(defun kyle/insert-line-with-text-above (text)
+  "Insert line with TEXT above the current pos."
+  (interactive "sinsert above:")
+  (let (
+        (indent-space
+         (car
+          (sanityinc/string-all-matches
+           "^\s*"
+           (buffer-substring
+            (line-beginning-position) (line-end-position)))))
+        )
+    (save-excursion
+      (end-of-line 0)
+      (insert (concat "\n" indent-space text)))))
+
+;; the base string is "// eslint-disable-next-line "
+
+;; see flycheck-error-format-message-and-id to see how to access props of an error
+
+;; TODO: improve this to ignore all the errors on the line, rather than the point
+(defun kyle/flycheck-eslint-ignore-at-point ()
+  "Add eslint ignore comment above the current line if there is an eslint error."
+  (interactive)
+  (when flycheck-mode
+    (-when-let (errors (flycheck-overlay-errors-at (point)))
+      (kyle/insert-line-with-text-above
+       (concat "// eslint-disable-next-line "
+               (string-join
+                (seq-map (lambda (err) (format "%s" (flycheck-error-id err))) errors)
+                ", "))))))
 
 (provide 'init-flycheck)
 ;;; init-flycheck.el ends here
