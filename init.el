@@ -135,6 +135,7 @@
 
 (require 'init-folding)
 (require 'init-dash)
+(require 'init-c)
 (require 'init-scala)
 (require 'init-kyle-custom)
 
