@@ -15,7 +15,7 @@
 
 (setq python-shell-interpreter "python3")
 
-(setq python-indent-offset 2)
+(setq python-indent-offset 4)
 
 (require-package 'pip-requirements)
 
