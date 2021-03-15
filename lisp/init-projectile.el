@@ -14,5 +14,9 @@
   (maybe-require-package 'ibuffer-projectile))
 
 
+;; compilation key
+(global-set-key (kbd "<f5>") 'projectile-compile-project)
+
+
 (provide 'init-projectile)
 ;;; init-projectile.el ends here
