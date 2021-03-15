@@ -19,8 +19,9 @@
 
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
-(when (maybe-require-package 'company-irony)
-  (eval-after-load 'company '(add-to-list 'company-backends 'company-irony)))
+(when (and (maybe-require-package 'company-irony) (maybe-require-package 'company-irony-c-headers))
+  (eval-after-load 'company '(add-to-list 'company-backends '(company-irony-c-headers company-irony))))
+
 
 (when (maybe-require-package 'flycheck-irony)
   (eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
@@ -29,11 +30,42 @@
   (add-hook 'irony-mode-hook #'irony-eldoc))
 
 
+(setq kyle/use-rtags nil)
+
+(when (maybe-require-package 'rtags)
+  ;; (unless (rtags-executable-find "rc") (error "Binary rc is not installed"))
+  ;; (unless (rtags-executable-find "rc") (error "Binary rc is not installed"))
+  (define-key c-mode-base-map (kbd "M-.") 'rtags-find-symbol-at-point)
+  (define-key c-mode-base-map (kbd "M-,") 'rtags-find-references-at-point)
+  (define-key c-mode-base-map (kbd "M-?") 'rtags-display-summary)
+  (rtags-enable-standard-keybindings)
+  (when (maybe-require-package 'company-rtags)
+    (setq rtags-autostart-diagnostics t)
+    (rtags-diagnostics)
+    (setq rtags-completions-enabled t)
+    (eval-after-load 'company '(add-to-list 'company-backends 'company-rtags))
+    )
+  )
+
+
+(when (and (maybe-require-package 'flycheck-rtags) kyle/use-rtags)
+  ;; ensure that we use only rtags checking
+  ;; https://github.com/Andersbakken/rtags#optional-1
+  (defun setup-flycheck-rtags ()
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
+    (setq-local flycheck-check-syntax-automatically nil)
+    (rtags-set-periodic-reparse-timeout 2.0) ;; Run flycheck 2 seconds after being idle.
+    )
+  (add-hook 'c-mode-hook #'setup-flycheck-rtags)
+  (add-hook 'c++-mode-hook #'setup-flycheck-rtags))
+
+
 (defun kyle/c-project-setup ()
   "Setup a the c project by generating compile commands with bear."
   (interactive)
   (projectile-with-default-dir (projectile-ensure-project (projectile-project-root))
-    (compile "bear make"))
+    (shell-command "bear make"))
   (call-interactively 'irony-cdb-json-add-compile-commands-path)
   )
 
