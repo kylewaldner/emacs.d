@@ -32,6 +32,8 @@
 
 (setq kyle/use-rtags nil)
 
+(require 'cc-mode)
+
 (when (maybe-require-package 'rtags)
   ;; (unless (rtags-executable-find "rc") (error "Binary rc is not installed"))
   ;; (unless (rtags-executable-find "rc") (error "Binary rc is not installed"))
