@@ -1,5 +1,9 @@
 [this repo is a fork](https://github.com/purcell/emacs.d)
 
+# Getting Started
+
+run the `initalize-system.sh` script to install everything and set up bash environment
+
 # important notes
 install ag (silversearcher) on system to use ag for search
 install tern and eslint (using npm) for nodejs development
