@@ -44,5 +44,5 @@
 ;; now need to build the metals emacs binary, and make sure it is available on $PATH
 ;; https://scalameta.org/metals/docs/editors/emacs.html
 
-(provide 'init-scalae)
+(provide 'init-scala)
 ;;; init-scala.el ends here
