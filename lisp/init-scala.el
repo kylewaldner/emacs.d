@@ -18,7 +18,7 @@
   (setq sbt:program-options '("-Dsbt.supershell=false")))
 
 (when (maybe-require-package 'lsp-mode)
-  (add-hook 'scala-mode-hook 'lsp-mode)
+  (add-hook 'scala-mode-hook 'lsp)
   (add-hook 'lsp-mode-hook 'lsp-lens-mode)
   ;; Uncomment following section if you would like to tune lsp-mode performance according to
   ;; https://emacs-lsp.github.io/lsp-mode/page/performance/
@@ -39,7 +39,8 @@
 
 (when (maybe-require-package 'dap-mode)
   (add-hook 'lsp-mode-hook 'dap-mode)
-  (add-hook 'lsp-mode-hook 'dap-ui-mode))
+  (add-hook 'lsp-mode-hook 'dap-ui-mode)
+  )
 
 ;; now need to build the metals emacs binary, and make sure it is available on $PATH
 ;; https://scalameta.org/metals/docs/editors/emacs.html
