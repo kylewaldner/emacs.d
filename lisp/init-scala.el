@@ -3,36 +3,46 @@
 ;;; Code:
 
 (maybe-require-package 'scala-mode)
-(maybe-require-package 'sbt-mode)
-
-(when (maybe-require-package 'lsp-mode)
-  (add-hook 'scala-mode-hook #'lsp)
-  ;; (add-hook 'lsp-mode-hook 'lsp-lens-mode) ;; // TODO: figure out what this is for
-  (setq lsp-prefer-flymake nil))
-
-(when (maybe-require-package 'lsp-metals)
-  (setq lsp-metals-treeview-show-when-views-received t))
-
-(maybe-require-package 'lsp-ui)
-
-(when (maybe-require-package 'company-lsp)
-  (after-load 'company
-    (add-to-list 'company-backends 'company-lsp)))
-
-(after-load 'dap-mode
-  (add-hook lsp-mode-hook 'dap-mode)
-  (add-hook lsp-mode-hook 'dap-ui-mode))
-
-;; curl -L -o coursier https://git.io/coursier-cli
-;; chmod +x coursier
-;; ./coursier bootstrap \
-;; --java-opt -Xss4m \
-;; --java-opt -Xms100m \
-;; --java-opt -Dmetals.client=emacs \
-;; org.scalameta:metals_2.12:0.9.3 \
-;; -r bintray:scalacenter/releases \
-;; -r sonatype:snapshots \
-;; -o /usr/local/bin/metals-emacs -f
 
 (provide 'init-scala)
+;;; init-scala.el ends here
+
+(add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-mode))
+
+(when (maybe-require-package 'sbt-mode)
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+  ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+  (setq sbt:program-options '("-Dsbt.supershell=false")))
+
+(when (maybe-require-package 'lsp-mode)
+  (add-hook 'scala-mode-hook 'lsp-mode)
+  (add-hook 'lsp-mode-hook 'lsp-lens-mode)
+  ;; Uncomment following section if you would like to tune lsp-mode performance according to
+  ;; https://emacs-lsp.github.io/lsp-mode/page/performance/
+  ;;       (setq gc-cons-threshold 100000000) ;; 100mb
+  ;;       (setq read-process-output-max (* 1024 1024)) ;; 1mb
+  ;;       (setq lsp-idle-delay 0.500)
+  ;;       (setq lsp-log-io nil)
+  ;;       (setq lsp-completion-provider :capf)
+  (setq lsp-prefer-flymake nil)
+  )
+
+(when (maybe-require-package 'lsp-metals)
+  (setq lsp-metals-treeview-show-when-views-received t)
+  )
+
+(maybe-require-package 'lsp-ui)
+;; (maybe-require-package 'company-lsp) ;; outdated
+
+(when (maybe-require-package 'dap-mode)
+  (add-hook 'lsp-mode-hook 'dap-mode)
+  (add-hook 'lsp-mode-hook 'dap-ui-mode))
+
+;; now need to build the metals emacs binary, and make sure it is available on $PATH
+;; https://scalameta.org/metals/docs/editors/emacs.html
+
+(provide 'init-scalae)
 ;;; init-scala.el ends here
