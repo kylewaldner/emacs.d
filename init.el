@@ -100,6 +100,7 @@
 (require 'init-erlang)
 (require 'init-javascript)
 (require 'init-engine)
+(require 'init-pdf)
 (require 'init-jade)
 (require 'init-php)
 (require 'init-org)
