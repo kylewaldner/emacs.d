@@ -157,5 +157,7 @@
 
 (setq redisplay-dont-pause t)
 
+(setq warning-minimum-level :error)
+
 (provide 'init-kyle-custom)
 ;;; init-kyle-custom.el ends here
