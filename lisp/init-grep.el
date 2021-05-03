@@ -27,7 +27,7 @@
   (setq-default ag-highlight-search t)
   ;; (search-refresh-key ag-mode-map) ;; ag-mode-map does not exist
   ;; use g to refresh buffer
-  (global-set-key (kbd "C-c i") 'ag-project)) ;; global search in project
+  (global-set-key (kbd "C-c i") 'projectile-ag)) ;; global search in project
 
 (when (and (executable-find "rg")
            (maybe-require-package 'rg))
