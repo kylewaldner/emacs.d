@@ -60,7 +60,7 @@
   (when (maybe-require-package 'js-doc)
     (add-hook 'js2-mode-hook
               (lambda ()
-                (define-key js2-mode-map (kbd "C-c i") 'js-doc-insert-function-doc)
+                (define-key js2-mode-map (kbd "C-c d") 'js-doc-insert-function-doc)
                 (define-key js2-mode-map (kbd "@") 'js-doc-insert-tag)
                 (define-key js2-mode-map (kbd "RET")
                   (lambda ()
