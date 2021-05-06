@@ -1,1 +1,1 @@
-./configure --with-native-compilation --with-mailutils --with-xwidgets --with-imagemagick --with-json
+./configure --with-native-compilation --with-mailutils --with-xwidgets --with-json
