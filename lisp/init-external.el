@@ -61,43 +61,47 @@ and some users may have other files that need to be opened in Emacs."
   (message file)
   (message (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query filetype " file))))
   (let ((file-type (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query filetype " file)))))
-    (if (or (and (>= (length file-type) 4) (string= (substring file-type 0 4) "text"))
-            (externalopen/find '("application/x-compressed-tar" "application/zip" "application/json") (lambda (elem) (string= elem file-type))))
-        ()
-      (let ((desktop-file (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query default " file-type)))))
-        (let ((desktop-file-path (externalopen/find '("/usr/share/applications/" "/usr/local/share/applications/" "~/.local/share/applications/") (lambda (elem) (file-exists-p (concat elem desktop-file))))))
-          (if desktop-file-path
+    (progn
+      (message (concat "file-type: " file-type))
+      (if (or (and (>= (length file-type) 4) (string= (substring file-type 0 4) "text"))
+              (externalopen/find externalopen-keep-in-emacs (lambda (elem) (string= elem file-type))))
+          ()
+        (let ((desktop-file (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query default " file-type)))))
+          (let ((desktop-file-path (externalopen/find '("/usr/share/applications/" "/usr/local/share/applications/" "~/.local/share/applications/") (lambda (elem) (file-exists-p (concat elem desktop-file))))))
+            (if desktop-file-path
                                         ; if the desktop file exists, then need to parse it and get the name of the program to externally open the file with. use gnu-coreutils programs for this since lisp is slow
-              (let ((external-program-line-string
-                     (externalopen/trim-newline
-                      (shell-command-to-string
-                       (concat "cat " desktop-file-path desktop-file " | grep Exec | head -1")
+                (let ((external-program-line-string
+                       (externalopen/trim-newline
+                        (shell-command-to-string
+                         (concat "grep '^Exec=' " desktop-file-path desktop-file " | head -1")
+                         ))
                        ))
-                     ))
-                ;; (message (concat "done:: " ""))
-                (if (> (length external-program-line-string) (length "Exec="))
+                  ;; (message (concat "done:: " ""))
+                  (if (> (length external-program-line-string) (length "Exec="))
                                         ; then found the program to run it
-                    (progn
-                      (let ((program-command (externalopen/extract-command external-program-line-string))
-                            (shell-file-name "/bin/sh"))
-                        (start-process-shell-command
-                         "openwith-process" nil
-                         (concat
-                          "exec nohup " program-command " " file " > /dev/null")))
-                      (kill-buffer nil)
-                      (error "Opened %s in external program"
-                             (file-name-nondirectory file)))
-                  (error "Could not find default program to open the file -- error 2"))
+                      (progn
+                        (let ((program-command (externalopen/extract-command external-program-line-string))
+                              (shell-file-name "/bin/sh"))
+                          (progn
+                            (message (concat "program-command: " program-command))
+                            (start-process-shell-command
+                             "openwith-process" nil
+                             (concat
+                              "exec nohup " program-command " " file " > /dev/null")))
+                          )
+                        (kill-buffer nil)
+                        (error "Opened %s in external program"
+                               (file-name-nondirectory file)))
+                    (error "Could not find default program to open the file -- error 2"))
+                  )
 
-
-                )
-
-            (error "Could not find default program to open the file!") ; else, display an error message and dont open the file?
+              (error "Could not find default program to open the file!") ; else, display an error message and dont open the file?
+              )
             )
-          )
 
-        )
-      ))
+          )
+        ))
+    )
   )
 
 (defun externalopen/find-file-hook ()
