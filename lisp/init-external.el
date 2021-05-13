@@ -13,7 +13,7 @@
   :group 'processes)
 
 (defcustom externalopen-keep-in-emacs
-  '("application/x-compressed-tar" "application/zip" "application/json")
+  '("application/x-compressed-tar" "application/zip" "application/json" "application/gzip")
   "List of file types that should still be opened in Emacs.
 Emacs supports opening archive files via TRAMP,
 and some users may have other files that need to be opened in Emacs."
