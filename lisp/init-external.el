@@ -219,10 +219,7 @@ Nil is returned if the file should be opened within Emacs."
 
 (defun externalopen/find-file-hook ()
   "The find file hook were 'buffer-file-name' is given as an arg."
-  (when (and externalopen-mode
-             externalopen-mode
-             ;; (not (buffer-modified-p)) (zerop (buffer-size))
-             )
+  (when externalopen-mode
     (let ((file (buffer-file-name)))
 
       (let ((external-program (externalopen/find-program file)))
@@ -236,7 +233,7 @@ Nil is returned if the file should be opened within Emacs."
   "Open non text files with external applications found by xdg-open."
   :lighter ""
   :global t
-  (if externalopen-mode
+  (if (and externalopen-mode (eq system-type 'gnu/linux))
       ;; (progn
       (add-hook 'find-file-hook 'externalopen/find-file-hook)
     ;;   (put 'externalopen/file-handler 'safe-magic t)
