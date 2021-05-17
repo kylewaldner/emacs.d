@@ -20,9 +20,9 @@ and some users may have other files that need to be opened in Emacs."
   :group 'externalopen
   :type 'list)
 
-  "List of file types that should still be opened in Emacs.
-Emacs supports opening archive files via TRAMP,
-and some users may have other files that need to be opened in Emacs."
+(defcustom externalopen-desktop-blacklist
+  '("emacs.desktop" "emacsclient.desktop")
+  "List of programs that should not be opened externally."
   :group 'externalopen
   :type 'list)
 
@@ -61,103 +61,6 @@ and some users may have other files that need to be opened in Emacs."
 
 ;; TODO: need way to see that we are in file archive
 
-;; DELETE
-(defun externalopen/open-file-with (file)
-  "Check to see if FILE should be openned with an external program."
-  (interactive)
-  (let ((file-type (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query filetype " file)))))
-    (if (or (and (>= (length file-type) 4) (string= (substring file-type 0 4) "text"))
-            (externalopen/find externalopen-keep-in-emacs (lambda (elem) (string= elem file-type))))
-        ()
-      (let ((desktop-file (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query default " file-type)))))
-        (let ((desktop-file-path (externalopen/find '("/usr/share/applications/" "/usr/local/share/applications/" "~/.local/share/applications/") (lambda (elem) (file-exists-p (concat elem desktop-file))))))
-          (if desktop-file-path
-                                        ; if the desktop file exists, then need to parse it and get the name of the program to externally open the file with. use gnu-coreutils programs for this since lisp is slow
-              (let ((external-program-line-string
-                     (externalopen/trim-newline
-                      (shell-command-to-string
-                       (concat "grep '^Exec=' " desktop-file-path desktop-file " | head -1")
-                       ))
-                     ))
-                ;; (message (concat "done:: " ""))
-                (if (> (length external-program-line-string) (length "Exec="))
-                                        ; then found the program to run it
-                    (progn
-                      (let ((program-command (externalopen/extract-command external-program-line-string))
-                            (shell-file-name "/bin/sh"))
-                        (message (concat "program-command: " program-command))
-                        (start-process-shell-command
-                         "openwith-process" nil
-                         (concat
-                          "exec nohup " program-command " " file " > /dev/null"))
-                        (kill-buffer nil)
-                        (error "Opened %s in external program: %s"
-                               (file-name-nondirectory file)
-                               program-command)
-                        )
-                      )
-                  (error "Could not find default program to open the file -- error 2"))
-                )
-
-            (error "Could not find default program to open the file!") ; else, display an error message and dont open the file?
-            )
-          )
-
-        )
-      )
-    )
-  )
-;;DELETE
-(defun externalopen/debug-open-file-with (file)
-  "Check to see if FILE should be openned with an external program."
-  (interactive)
-  (message file)
-  (message (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query filetype " file))))
-  (let ((file-type (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query filetype " file)))))
-    (progn
-      (message (concat "file-type: " file-type))
-      (if (or (and (>= (length file-type) 4) (string= (substring file-type 0 4) "text"))
-              (externalopen/find externalopen-keep-in-emacs (lambda (elem) (string= elem file-type))))
-          ()
-        (let ((desktop-file (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query default " file-type)))))
-          (let ((desktop-file-path (externalopen/find '("/usr/share/applications/" "/usr/local/share/applications/" "~/.local/share/applications/") (lambda (elem) (file-exists-p (concat elem desktop-file))))))
-            (if desktop-file-path
-                                        ; if the desktop file exists, then need to parse it and get the name of the program to externally open the file with. use gnu-coreutils programs for this since lisp is slow
-                (let ((external-program-line-string
-                       (externalopen/trim-newline
-                        (shell-command-to-string
-                         (concat "grep '^Exec=' " desktop-file-path desktop-file " | head -1")
-                         ))
-                       ))
-                  ;; (message (concat "done:: " ""))
-                  (if (> (length external-program-line-string) (length "Exec="))
-                                        ; then found the program to run it
-                      (progn
-                        (let ((program-command (externalopen/extract-command external-program-line-string))
-                              (shell-file-name "/bin/sh"))
-                          (message (concat "program-command: " program-command))
-                          (start-process-shell-command
-                           "openwith-process" nil
-                           (concat
-                            "exec nohup " program-command " " file " > /dev/null"))
-                          (kill-buffer nil)
-                          (error "Opened %s in external program: %s"
-                                 (file-name-nondirectory file)
-                                 program-command)
-                          )
-                        )
-                    (error "Could not find default program to open the file -- error 2"))
-                  )
-
-              (error "Could not find default program to open the file!") ; else, display an error message and dont open the file?
-              )
-            )
-
-          )
-        ))
-    )
-  )
-
 (defun externalopen/find-program (file)
   "Check to see if FILE should be openned with an external program.
 If so, then return the string representing the external program.
@@ -167,24 +70,27 @@ Nil is returned if the file should be opened within Emacs."
             (externalopen/find externalopen-keep-in-emacs (lambda (elem) (string= elem file-type))))
         nil ;; the file is a text file or on the whitelist
       (let ((desktop-file (externalopen/trim-newline (shell-command-to-string (concat "xdg-mime query default " file-type)))))
-        (let ((desktop-file-path (externalopen/find '("/usr/share/applications/" "/usr/local/share/applications/" "~/.local/share/applications/") (lambda (elem) (file-exists-p (concat elem desktop-file))))))
-          (if desktop-file-path
-              ;; if the desktop file exists, then need to parse it and get the name of the program to externally open the file with. use gnu-coreutils programs for this since lisp is slow
-              (let ((external-program-line-string
-                     (externalopen/trim-newline
-                      (shell-command-to-string
-                       (concat "grep '^Exec=' " desktop-file-path desktop-file " | head -1")
+        (if (externalopen/find externalopen-desktop-blacklist (lambda (elem) (string= elem desktop-file)))
+            ;; if the program/desktop file is on the blacklist, then return nil
+            nil
+          (let ((desktop-file-path (externalopen/find '("/usr/share/applications/" "/usr/local/share/applications/" "~/.local/share/applications/") (lambda (elem) (file-exists-p (concat elem desktop-file))))))
+            (if desktop-file-path
+                ;; if the desktop file exists, then need to parse it and get the name of the program to externally open the file with. use gnu-coreutils programs for this since lisp is slow
+                (let ((external-program-line-string
+                       (externalopen/trim-newline
+                        (shell-command-to-string
+                         (concat "grep '^Exec=' " desktop-file-path desktop-file " | head -1")
+                         ))
                        ))
-                     ))
-                (if (> (length external-program-line-string) (length "Exec="))
-                    (externalopen/extract-command external-program-line-string) ; return the external program name as a string
-                  nil ; there was a desktop file, but no command was listed
+                  (if (> (length external-program-line-string) (length "Exec="))
+                      (externalopen/extract-command external-program-line-string) ; return the external program name as a string
+                    nil ; there was a desktop file, but no command was listed
+                    )
                   )
-                )
-            nil ; there is no desktop file that will point to an external program
+              nil ; there is no desktop file that will point to an external program
+              )
             )
           )
-
         )
       )
     ))
