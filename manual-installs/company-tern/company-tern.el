@@ -31,7 +31,6 @@
 (require 'company)
 (require 'tern)
 (require 'dash)
-(require 'dash-functional)
 (require 's)
 
 (defgroup company-tern nil
