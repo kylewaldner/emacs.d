@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 echo 'Rebuilding emacs'
 
 cd ~/src-code/emacs/
@@ -12,6 +14,6 @@ git pull
 
 $(cat ~/.emacs.d/configure-options)
 
-make -j 8
+make -j $(nproc)
 
 sudo make install
