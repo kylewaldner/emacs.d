@@ -3,7 +3,13 @@
 ;;; Code:
 
 (when (maybe-require-package 'flycheck)
-  (add-hook 'after-init-hook 'global-flycheck-mode)
+  ;; (add-hook 'after-init-hook 'global-flycheck-mode)
+  ;; this hook only turns on flycheck in local programming mode files
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (interactive)
+              (unless (file-remote-p default-directory)
+                (flycheck-mode))))
   (setq flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list)
 
   (when (maybe-require-package 'flycheck-color-mode-line)
