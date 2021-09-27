@@ -27,11 +27,14 @@
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
     (add-hook 'elpy-mode-hook 'flycheck-mode)
     (setq elpy-rpc-python-command "python3")
+    (setq flycheck-python-flake8-executable "python3")
     (when (maybe-require-package 'py-autopep8)
       (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+      ;; remove this hook to turn off python autofix - important in legacy repos
       (add-hook 'after-save-hook (lambda ()
                                    (if (eq major-mode 'python-mode)
-                                       (elpy-autopep8-fix-code)))))))
+                                       (elpy-autopep8-fix-code))))
+      )))
 
 ;; py-autopep8 is other option
 ;; blacken is better since it runs inside emacs
