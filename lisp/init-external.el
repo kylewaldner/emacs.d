@@ -164,7 +164,7 @@ Nil is returned if the file should be opened within Emacs."
 ;;                               ("\\.mp4\\'" "vlc" (file))
 ;;                               ))
 
-(externalopen-mode t)
+;; (externalopen-mode t)
 
 
 (provide 'init-external)
