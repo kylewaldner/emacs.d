@@ -43,6 +43,10 @@
           (lambda ()
             (local-set-key (kbd "C-M-n") 'python-nav-up-list)))
 
+(defun kyle/jedi:goto-definition-in-other-window ()
+  "what that says"
+  (interactive)
+  (jedi:goto-definition 'other-window))
 ;; py-autopep8 is other option
 ;; blacken is better since it runs inside emacs
 
