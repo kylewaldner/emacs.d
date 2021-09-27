@@ -39,6 +39,10 @@
 
 (setq elpy-rpc-timeout 10)
 
+(add-hook 'python-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-M-n") 'python-nav-up-list)))
+
 ;; py-autopep8 is other option
 ;; blacken is better since it runs inside emacs
 
