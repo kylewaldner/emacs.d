@@ -58,18 +58,19 @@
                 (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
                 (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl))))
   (when (maybe-require-package 'js-doc)
-    (add-hook 'js2-mode-hook
-              (lambda ()
-                (define-key js2-mode-map (kbd "C-c d") 'js-doc-insert-function-doc)
-                (define-key js2-mode-map (kbd "@") 'js-doc-insert-tag)
-                (define-key js2-mode-map (kbd "RET")
-                  (lambda ()
-                    (interactive) (if (kyle/js-doc-in-document-p (point))
-                                      (progn
-                                        (newline-and-indent)
-                                        (insert "* "))
-                                    (newline-and-indent))))
-                )))
+    ;; (add-hook 'js2-mode-hook
+    ;;           (lambda ()
+    ;;             (define-key js2-mode-map (kbd "C-c d") 'js-doc-insert-function-doc)
+    ;;             (define-key js2-mode-map (kbd "@") 'js-doc-insert-tag)
+    ;;             (define-key js2-mode-map (kbd "RET")
+    ;;               (lambda ()
+    ;;                 (interactive) (if (kyle/js-doc-in-document-p (point))
+    ;;                                   (progn
+    ;;                                     (newline-and-indent)
+    ;;                                     (insert "* "))
+    ;;                                 (electric-indent-post-self-insert-function))))
+    ;;             ))
+    )
 
   (add-hook 'js2-mode-hook (lambda () (setq mode-name "JS2")))
   (add-hook 'js2-mode-hook (lambda () (npm-mode (diminish 'npm-mode))))
