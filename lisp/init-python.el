@@ -36,6 +36,9 @@
                                        (elpy-autopep8-fix-code))))
       )))
 
+
+(setq elpy-rpc-timeout 10)
+
 ;; py-autopep8 is other option
 ;; blacken is better since it runs inside emacs
 
