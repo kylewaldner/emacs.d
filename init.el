@@ -142,7 +142,7 @@
 ;; (require 'init-c)
 (require 'init-cpp)
 (require 'init-scala)
-(require 'init-verilogo)
+(require 'init-verilog)
 (require 'init-kyle-custom)
 
 ;;(require 'init-twitter)
