@@ -34,6 +34,9 @@
 ;; (when (maybe-require-package 'cmake-ide)
 ;;   (cmake-ide-setup))
 
+(maybe-require-package 'cmake-mode)
+(maybe-require-package 'cmake-font-lock)
+
 (setq kyle/use-rtags nil)
 
 ;; (require 'cc-mode)

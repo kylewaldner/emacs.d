@@ -28,8 +28,9 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(when  (maybe-require-package 'dumb-jump)
-  (dumb-jump-mode))
+;; no
+;; (when  (maybe-require-package 'dumb-jump)
+;;   (dumb-jump-mode))
 
 
 (defun kyle/load-init()
