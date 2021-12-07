@@ -7,6 +7,10 @@
 
 ;;  If you are using Cmake to build your project, it is really easy to generate compilation database, since CMake has support for it. You just provide CMake with correct flag (cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ...) and that is it! Later you can just call cmake . and it will update compilation database if needed. This is what I used for my project, since it uses CMake.
 
+(defun kyle/c-indent (indent-amount)
+  "set INDENT-AMOUNT level for c modes."
+  (interactive "sC indent value:")
+  (setq c-basic-offset (string-to-number indent-amount)))
 
 (when (maybe-require-package 'irony)
   ;; If irony server was never installed, install it.
