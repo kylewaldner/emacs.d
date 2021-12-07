@@ -89,6 +89,9 @@ there is no current file, eval the current buffer."
 
 (add-hook 'emacs-lisp-mode-hook 'sanityinc/maybe-set-bundled-elisp-readonly)
 
+(when (fboundp 'global-prettify-symbols-mode)
+  (add-hook 'emacs-lisp-mode-hook 'prettify-symbols-mode))
+
 
 ;; Use C-c C-z to toggle between elisp files and an ielm session
 ;; I might generalise this to ruby etc., or even just adopt the repl-toggle package.

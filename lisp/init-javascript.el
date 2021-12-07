@@ -47,6 +47,8 @@
   (when (maybe-require-package 'tern)
     ;; redo all tern keybindings
     (add-hook 'js2-mode-hook (lambda () (tern-mode t))))
+  (when (fboundp 'global-prettify-symbols-mode)
+    (add-hook 'js2-mode-hook 'prettify-symbols-mode))
   ;; (add-hook 'js2-mode-hook 'sanityinc/enable-js2-checks-if-flycheck-inactive)
   (when (maybe-require-package 'nodejs-repl)
     (add-hook 'js-mode-hook
