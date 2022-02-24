@@ -144,6 +144,7 @@
 
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; (add-hook 'before-save-hook 'delete-trailing-whitespace nil t) ;; try this if broken
 
 
 ;; open large files in fundamental mode
@@ -159,6 +160,15 @@
 (setq redisplay-dont-pause t)
 
 (setq warning-minimum-level :error)
+
+;; (setq-default require-final-newline t)
+
+
+;; move this stuff to remote.el
+
+(defun tramp-sh-handle-vc-registered (f) nil)
+
+;; (setq projectile-mode-line "Projectile")
 
 (provide 'init-kyle-custom)
 ;;; init-kyle-custom.el ends here
