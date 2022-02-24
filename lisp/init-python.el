@@ -15,6 +15,10 @@
 
 (setq python-shell-interpreter "python3")
 
+;;; pip3 install jedi autopep8 flake8 ipython importmagic yapf
+
+(setq python-shell-interpreter-args "-i --simple-prompt")
+
 (setq python-indent-offset 4)
 
 (require-package 'pip-requirements)
@@ -24,20 +28,20 @@
 (when (maybe-require-package 'elpy)
   (elpy-enable)
   (after-load 'flycheck
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    ;; (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
     (add-hook 'elpy-mode-hook 'flycheck-mode)
-    (setq elpy-rpc-python-command "python3")
-    (setq flycheck-python-flake8-executable "python3")
+    ;; (setq elpy-rpc-python-command "python3")
+    ;; (setq flycheck-python-flake8-executable "python3")
     (when (maybe-require-package 'py-autopep8)
-      (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+      ;; (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
       ;; remove this hook to turn off python autofix - important in legacy repos
-      (add-hook 'after-save-hook (lambda ()
-                                   (if (eq major-mode 'python-mode)
-                                       (elpy-autopep8-fix-code))))
+      ;; (add-hook 'after-save-hook (lambda ()
+      ;;                              (if (and (eq major-mode 'python-mode) nil)
+      ;;                                  (elpy-autopep8-fix-code))))
       )))
 
 
-(setq elpy-rpc-timeout 10)
+(setq elpy-rpc-timeout 2)
 
 (add-hook 'python-mode-hook
           (lambda ()
@@ -47,6 +51,13 @@
   "what that says"
   (interactive)
   (jedi:goto-definition 'other-window))
+
+(require 'highlight-indentation)
+
+(set-face-background 'highlight-indentation-current-column-face "#c3b3b3")
+
+(add-hook 'python-mode-hook 'highlight-indentation-current-column-mode)
+
 ;; py-autopep8 is other option
 ;; blacken is better since it runs inside emacs
 
