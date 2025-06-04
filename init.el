@@ -148,6 +148,9 @@
   (when (straight-use-package 'daemons)))
 (when (straight-use-package 'dotenv-mode))
 
+;; Byte compilation utilities
+(require 'init-compilation)
+
 ;; causes errors
 ;; (when (straight-use-package 'uptimes)
 ;;   (setq-default uptimes-keep-count 200)
