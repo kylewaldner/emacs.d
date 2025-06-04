@@ -62,3 +62,6 @@ company-statistics-cache.el
 # Python virtual environment (created by install.sh)
 /python-venv/
 /python-venv-info.txt
+
+# straight.el package manager
+/straight/
