@@ -144,6 +144,7 @@
 (require 'init-scala)
 (require 'init-verilog)
 (require 'init-kyle-custom)
+(require 'init-chat)
 
 ;;(require 'init-twitter)
 ;; (require 'init-mu)
