@@ -8,7 +8,7 @@
 
 ;; https://github.com/hrs/engine-mode
 
-(when (maybe-require-package 'engine-mode)
+(when (straight-use-package 'engine-mode)
   (engine-mode t)
   (defengine duckduckgo
     "https://duckduckgo.com/?q=%s"
