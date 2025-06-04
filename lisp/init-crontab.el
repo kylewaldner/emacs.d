@@ -2,8 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-(require-package 'crontab-mode)
-(add-auto-mode 'crontab-mode "\\.?cron\\(tab\\)?\\'")
+(use-package crontab-mode
+  :mode "\\.?cron\\(tab\\)?\\'")
 
 (provide 'init-crontab)
 ;;; init-crontab.el ends here
