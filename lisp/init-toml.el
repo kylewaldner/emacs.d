@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (maybe-require-package 'toml-mode)
+(when (straight-use-package 'toml-mode)
   (add-hook 'toml-mode-hook 'goto-address-prog-mode))
 
 

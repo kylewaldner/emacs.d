@@ -2,8 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-(require-package 'color-theme-sanityinc-solarized)
-(require-package 'color-theme-sanityinc-tomorrow)
+(straight-use-package 'color-theme-sanityinc-solarized)
+(straight-use-package 'color-theme-sanityinc-tomorrow)
 
 ;; Don't prompt to confirm theme safety. This avoids problems with
 ;; first-time startup on Emacs > 26.3.
@@ -39,7 +39,7 @@
   (reapply-themes))
 
 
-(when (maybe-require-package 'dimmer)
+(when (straight-use-package 'dimmer)
   (setq-default dimmer-fraction 0.15)
   (add-hook 'after-init-hook 'dimmer-mode)
   ;; TODO: file upstream as a PR

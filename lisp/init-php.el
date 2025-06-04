@@ -2,10 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (maybe-require-package 'php-mode)
-  (maybe-require-package 'smarty-mode)
+(when (straight-use-package 'php-mode)
+  (straight-use-package 'smarty-mode)
 
-  (when (maybe-require-package 'company-php)
+  (when (straight-use-package 'company-php)
     (after-load 'company
       (push 'company-ac-php-backend company-backends))))
 

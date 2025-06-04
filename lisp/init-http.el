@@ -2,8 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-(maybe-require-package 'httprepl)
-(when (maybe-require-package 'restclient)
+(straight-use-package 'httprepl)
+(when (straight-use-package 'restclient)
   (add-auto-mode 'restclient-mode "\\.rest\\'")
 
   (defun sanityinc/restclient ()

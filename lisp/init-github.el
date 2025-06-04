@@ -4,15 +4,15 @@
 
 (require 'init-git)
 
-(maybe-require-package 'yagist)
-(require-package 'bug-reference-github)
-(add-hook 'prog-mode-hook 'bug-reference-prog-mode)
+(straight-use-package 'yagist)
+(when (straight-use-package 'bug-reference-github)
+  (add-hook 'prog-mode-hook 'bug-reference-prog-mode))
 
-(maybe-require-package 'github-clone)
+(straight-use-package 'github-clone)
 ;; Suppress cl deprecation warning for forge
 (with-suppressed-warnings ((obsolete cl-lib))
-  (maybe-require-package 'forge))
-(maybe-require-package 'github-review)
+  (straight-use-package 'forge))
+(straight-use-package 'github-review)
 
 (provide 'init-github)
 ;;; init-github.el ends here

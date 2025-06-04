@@ -113,7 +113,7 @@
 (require 'init-docker)
 (require 'init-terraform)
 (require 'init-nix)
-(maybe-require-package 'nginx-mode)
+(straight-use-package 'nginx-mode)
 
 (require 'init-paredit)
 (require 'init-lisp)
@@ -138,18 +138,18 @@
 ;; (require 'init-mu)
 ;; Extra packages which don't require any configuration
 
-(require-package 'sudo-edit)
-(require-package 'lua-mode)
-(require-package 'htmlize)
-(require-package 'dsvn)
+(straight-use-package 'sudo-edit)
+(straight-use-package 'lua-mode)
+(straight-use-package 'htmlize)
+(straight-use-package 'dsvn)
 (when *is-a-mac*
-  (require-package 'osx-location))
+  (straight-use-package 'osx-location))
 (unless (eq system-type 'windows-nt)
-  (maybe-require-package 'daemons))
-(maybe-require-package 'dotenv-mode)
+  (when (straight-use-package 'daemons)))
+(when (straight-use-package 'dotenv-mode))
 
 ;; causes errors
-;; (when (maybe-require-package 'uptimes)
+;; (when (straight-use-package 'uptimes)
 ;;   (setq-default uptimes-keep-count 200)
 ;;   (add-hook 'after-init-hook (lambda () (require 'uptimes))))
 

@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (maybe-require-package 'jade-mode)
+(when (straight-use-package 'jade-mode)
   (add-hook 'jade-mode-hook 'linum-mode))
 
 (provide 'init-jade)

@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (maybe-require-package 'projectile-rails)
+(when (straight-use-package 'projectile-rails)
   (add-hook 'projectile-mode-hook
             (lambda () (projectile-rails-global-mode projectile-mode))))
 

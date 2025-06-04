@@ -47,7 +47,7 @@
 (after-load 'lisp-mode
   (define-key emacs-lisp-mode-map (kbd "C-x C-e") 'sanityinc/eval-last-sexp-or-region))
 
-(when (maybe-require-package 'ipretty)
+(when (straight-use-package 'ipretty)
   (add-hook 'after-init-hook 'ipretty-mode))
 
 
@@ -135,7 +135,7 @@ there is no current file, eval the current buffer."
 ;; ----------------------------------------------------------------------------
 ;; Automatic byte compilation
 ;; ----------------------------------------------------------------------------
-(when (maybe-require-package 'auto-compile)
+(when (straight-use-package 'auto-compile)
   (add-hook 'after-init-hook 'auto-compile-on-save-mode)
   (add-hook 'after-init-hook 'auto-compile-on-load-mode))
 
@@ -146,8 +146,8 @@ there is no current file, eval the current buffer."
 
 
 
-(require-package 'immortal-scratch)
-(add-hook 'after-init-hook 'immortal-scratch-mode)
+(when (straight-use-package 'immortal-scratch)
+  (add-hook 'after-init-hook 'immortal-scratch-mode))
 
 
 ;;; Support byte-compilation in a sub-process, as
@@ -179,7 +179,7 @@ there is no current file, eval the current buffer."
   "Hook run in all Lisp modes.")
 
 
-(when (maybe-require-package 'aggressive-indent)
+(when (straight-use-package 'aggressive-indent)
   (add-to-list 'sanityinc/lispy-modes-hook 'aggressive-indent-mode))
 
 (defun sanityinc/lisp-setup ()

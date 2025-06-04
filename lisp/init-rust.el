@@ -2,13 +2,13 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (maybe-require-package 'rust-mode)
-  (when (maybe-require-package 'racer)
+(when (straight-use-package 'rust-mode)
+  (when (straight-use-package 'racer)
     (add-hook 'rust-mode-hook #'racer-mode))
-  (when (maybe-require-package 'company)
+  (when (straight-use-package 'company)
     (add-hook 'racer-mode-hook #'company-mode)))
 
-(when (maybe-require-package 'flycheck-rust)
+(when (straight-use-package 'flycheck-rust)
   (after-load 'rust-mode
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 

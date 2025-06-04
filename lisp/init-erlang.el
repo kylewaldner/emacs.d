@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (maybe-require-package 'erlang)
+(when (straight-use-package 'erlang)
   (require 'erlang-start))
 
 

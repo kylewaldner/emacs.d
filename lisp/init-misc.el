@@ -25,7 +25,7 @@
    (normal-mode)))
 
 
-(when (maybe-require-package 'info-colors)
+(when (straight-use-package 'info-colors)
   (after-load 'info
     (add-hook 'Info-selection-hook 'info-colors-fontify-node)))
 
@@ -40,13 +40,13 @@
 
 
 ;; Replaced regex-tool with built-in rx macro for better regex building
-;; Old: (when (maybe-require-package 'regex-tool)
+;; Old: (when (straight-use-package 'regex-tool)
 ;;        (setq-default regex-tool-backend 'perl))
 ;; Use built-in rx macro instead: (rx ...) or visual-regexp package
-(maybe-require-package 'visual-regexp)
-(maybe-require-package 'visual-regexp-steroids)
-(global-set-key (kbd "C-c r") 'vr/replace)
-(global-set-key (kbd "C-c q") 'vr/query-replace)
+(when (straight-use-package 'visual-regexp)
+  (when (straight-use-package 'visual-regexp-steroids)
+    (global-set-key (kbd "C-c r") 'vr/replace)
+    (global-set-key (kbd "C-c q") 'vr/query-replace)))
 
 (after-load 're-builder
   ;; Support a slightly more idiomatic quit binding in re-builder

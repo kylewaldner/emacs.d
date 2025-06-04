@@ -2,10 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
-(require-package 'textile-mode)
-
-(setq auto-mode-alist
-      (cons '("\\.textile\\'" . textile-mode) auto-mode-alist))
+(when (straight-use-package 'textile-mode)
+  (setq auto-mode-alist
+        (cons '("\\.textile\\'" . textile-mode) auto-mode-alist)))
 
 
 (provide 'init-textile)
