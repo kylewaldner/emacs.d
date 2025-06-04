@@ -26,20 +26,16 @@
 ;;----------------------------------------------------------------------------
 ;; Adjust garbage collection thresholds during startup, and thereafter
 ;;----------------------------------------------------------------------------
-(let ((normal-gc-cons-threshold (* 20 1024 1024))
-      (init-gc-cons-threshold (* 128 1024 1024)))
-  (setq gc-cons-threshold init-gc-cons-threshold)
-  (add-hook 'emacs-startup-hook
-            (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
+;; GC optimization is now handled in early-init.el
 
 ;;----------------------------------------------------------------------------
 ;; Bootstrap config
 ;;----------------------------------------------------------------------------
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (require 'init-utils)
-(require 'init-site-lisp) ;; Must come before elpa, as it may provide package.el
-;; Calls (package-initialize)
-(require 'init-elpa)      ;; Machinery for installing required packages
+(require 'init-site-lisp) ;; Must come before package management
+;; New straight.el-based package management
+(require 'init-straight)    ;; Replaces init-elpa with straight.el + use-package
 (require 'init-exec-path) ;; Set up $PATH
 
 ;;----------------------------------------------------------------------------
@@ -51,9 +47,10 @@
 ;; Load configs for specific features and modes
 ;;----------------------------------------------------------------------------
 
-(require-package 'diminish)
-(maybe-require-package 'scratch)
-(require-package 'command-log-mode)
+;; Essential packages are now loaded in init-straight.el
+
+;; manually load company-tern package that is stored locally
+(load-file "~/.emacs.d/manual-installs/company-tern/company-tern-autoloads.el")
 
 (require 'init-frame-hooks)
 (require 'init-xterm)
@@ -71,11 +68,6 @@
 (require 'init-smex)
 (require 'init-ivy)
 (require 'init-hippie-expand)
-
-;; manually load company-tern package that is stored locally
-(load-file "~/.emacs.d/manual-installs/company-tern/company-tern-autoloads.el")
-
-
 
 (require 'init-company)
 (require 'init-windows)
