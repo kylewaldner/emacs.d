@@ -49,15 +49,6 @@
 
 ;; Essential packages are now loaded in init-straight.el
 
-;; manually load company-tern package that is stored locally
-;; First, add manual-installs subdirectories to load path
-(add-to-list 'load-path (expand-file-name "manual-installs/tern-20181108.722" user-emacs-directory))
-(add-to-list 'load-path (expand-file-name "manual-installs/company-tern" user-emacs-directory))
-
-;; Load tern first, then company-tern
-(require 'tern)
-(load-file "~/.emacs.d/manual-installs/company-tern/company-tern-autoloads.el")
-
 (require 'init-frame-hooks)
 (require 'init-xterm)
 (require 'init-themes)
