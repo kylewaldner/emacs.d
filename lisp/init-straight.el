@@ -48,4 +48,4 @@ MIN-VERSION and NO-REFRESH are ignored for compatibility."
 (use-package command-log-mode)
 
 (provide 'init-straight)
-;;; init-straight.el ends here 
+;;; init-straight.el ends here
