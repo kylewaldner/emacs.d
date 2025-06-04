@@ -47,18 +47,18 @@ print_menu_item() {
 show_banner() {
     echo -e "${BOLD}${CYAN}"
     cat << "EOF"
- _____ __  __    _    ____ ____    ____             __ _       
-| ____|  \/  |  / \  / ___/ ___|  / ___|___  _ __  / _(_) __ _ 
+ _____ __  __    _    ____ ____    ____             __ _
+| ____|  \/  |  / \  / ___/ ___|  / ___|___  _ __  / _(_) __ _
 |  _| | |\/| | / _ \| |   \___ \ | |   / _ \| '_ \| |_| |/ _` |
 | |___| |  | |/ ___ \ |___ ___) || |__| (_) | | | |  _| | (_| |
 |_____|_|  |_/_/   \_\____|____/  \____\___/|_| |_|_| |_|\__, |
-                                                        |___/ 
-    ___           _        _ _       _   _             
-   |_ _|_ __  ___| |_ __ _| | | __ _| |_(_) ___  _ __  
-    | || '_ \/ __| __/ _` | | |/ _` | __| |/ _ \| '_ \ 
+                                                        |___/
+    ___           _        _ _       _   _
+   |_ _|_ __  ___| |_ __ _| | | __ _| |_(_) ___  _ __
+    | || '_ \/ __| __/ _` | | |/ _` | __| |/ _ \| '_ \
     | || | | \__ \ || (_| | | | (_| | |_| | (_) | | | |
    |___|_| |_|___/\__\__,_|_|_|\__,_|\__|_|\___/|_| |_|
-                                                      
+
 EOF
     echo -e "${NC}"
 }
@@ -75,24 +75,28 @@ check_installation_dir() {
 # Function to list available installers
 list_installers() {
     local installers=()
-    
+
     if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]]; then
         installers+=("python" "Python Dependencies (jedi, autopep8, flake8, etc.)")
     fi
-    
+
+    if [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]]; then
+        installers+=("scala" "Scala Dependencies (Java, SBT, Metals, Scalafmt, etc.)")
+    fi
+
     # Add more installers here as they are created
     # Example:
     # if [[ -f "$INSTALLATION_DIR/install_node_deps.sh" ]]; then
     #     installers+=("node" "Node.js Dependencies")
     # fi
-    
+
     printf '%s\n' "${installers[@]}"
 }
 
 # Function to run specific installer
 run_installer() {
     local installer_type="$1"
-    
+
     case "$installer_type" in
         "python")
             if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]]; then
@@ -103,11 +107,20 @@ run_installer() {
                 return 1
             fi
             ;;
+        "scala")
+            if [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]]; then
+                print_status "Running Scala dependencies installer..."
+                bash "$INSTALLATION_DIR/install_scala_deps.sh"
+            else
+                print_error "Scala installer not found!"
+                return 1
+            fi
+            ;;
         "all")
             print_status "Running all available installers..."
             local success_count=0
             local total_count=0
-            
+
             if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]]; then
                 ((total_count++))
                 print_header "Installing Python Dependencies..."
@@ -119,9 +132,21 @@ run_installer() {
                 fi
                 echo
             fi
-            
+
+            if [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]]; then
+                ((total_count++))
+                print_header "Installing Scala Dependencies..."
+                if bash "$INSTALLATION_DIR/install_scala_deps.sh"; then
+                    ((success_count++))
+                    print_success "Scala dependencies installed successfully"
+                else
+                    print_error "Scala dependencies installation failed"
+                fi
+                echo
+            fi
+
             # Add more installers here
-            
+
             print_status "Installation summary: $success_count/$total_count installers completed successfully"
             if [[ $success_count -eq $total_count ]]; then
                 print_success "All installations completed successfully!"
@@ -141,31 +166,44 @@ show_menu() {
     echo
     print_header "=== Available Installers ==="
     echo
-    
-    # Check if Python installer exists
-    if [[ ! -f "$INSTALLATION_DIR/install_python_deps.sh" ]]; then
+
+    # Check if any installers exist
+    local has_installers=false
+    if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]]; then
+        has_installers=true
+    fi
+
+    if ! $has_installers; then
         print_warning "No installers found in $INSTALLATION_DIR"
         return 1
     fi
-    
+
     echo "Select an option:"
 }
 
 # Function to get user choice - simplified
 get_user_choice() {
     local options=()
-    
+
     # Build options array
     if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]]; then
         options+=("Install Python Dependencies")
     fi
-    
+
+    if [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]]; then
+        options+=("Install Scala Dependencies")
+    fi
+
     options+=("Install All Dependencies" "Quit")
-    
+
     select choice in "${options[@]}"; do
         case "$choice" in
             "Install Python Dependencies")
                 echo "python"
+                return 0
+                ;;
+            "Install Scala Dependencies")
+                echo "scala"
                 return 0
                 ;;
             "Install All Dependencies")
@@ -191,6 +229,7 @@ show_usage() {
     echo "  -h, --help     Show this help message"
     echo "  -l, --list     List available installers"
     echo "  python         Install Python dependencies"
+    echo "  scala          Install Scala dependencies"
     echo "  all            Install all dependencies"
     echo
     echo "If no option is provided, interactive menu will be shown."
@@ -199,7 +238,7 @@ show_usage() {
 # Main function
 main() {
     local arg="${1:-}"
-    
+
     case "$arg" in
         "-h"|"--help")
             show_usage
@@ -210,13 +249,13 @@ main() {
             echo "Available installers:"
             local installers_output
             installers_output=$(list_installers)
-            
+
             # Read installers into array
             local installers=()
             while IFS= read -r line; do
                 installers+=("$line")
             done <<< "$installers_output"
-            
+
             for ((i=0; i<${#installers[@]}; i+=2)); do
                 local key="${installers[i]}"
                 local desc="${installers[i+1]}"
@@ -224,7 +263,7 @@ main() {
             done
             exit 0
             ;;
-        "python"|"all")
+        "python"|"scala"|"all")
             check_installation_dir
             run_installer "$arg"
             exit $?
@@ -234,24 +273,24 @@ main() {
             show_banner
             print_header "Welcome to the Emacs Configuration Installer!"
             print_status "This script helps you install various dependencies for your Emacs setup."
-            
+
             check_installation_dir
-            
+
             while true; do
                 show_menu
                 if ! choice=$(get_user_choice); then
                     continue
                 fi
-                
+
                 if [[ "$choice" == "quit" ]]; then
                     print_status "Goodbye!"
                     exit 0
                 fi
-                
+
                 echo
                 print_header "Running installer: $choice"
                 echo
-                
+
                 if run_installer "$choice"; then
                     echo
                     print_success "Installation completed!"
@@ -274,4 +313,4 @@ main() {
 }
 
 # Run main function
-main "$@" 
+main "$@"

@@ -49,10 +49,11 @@
 ;;   (fullframe magit-status magit-mode-quit-window))
 ;; dont force magit status to be fullscreen
 
-(when (maybe-require-package 'git-commit)
+(after-load 'magit
   (add-hook 'git-commit-mode-hook 'goto-address-mode))
 
-
+
+
 (when *is-a-mac*
   (after-load 'magit
     (add-hook 'magit-mode-hook (lambda () (local-unset-key [(meta h)])))))
