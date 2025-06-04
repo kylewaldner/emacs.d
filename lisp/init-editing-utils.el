@@ -369,5 +369,64 @@ ORIG is the advised function, which is called with its ARGS."
 (advice-add 'kmacro-call-macro :around 'sanityinc/disable-features-during-macro-call)
 
 
+
+(defun add-delimiter-to-region (start end delimiter n)
+  "Add a DELIMITER every N characters in the selected region.
+If N is not provided, default to 18."
+  (interactive
+   (let ((delim (read-string "Enter delimiter: "))
+         (num (read-number "Enter number of characters (default 18): " 18)))
+     (list (region-beginning) (region-end) delim num)))
+  (save-excursion
+    (goto-char start)
+    (let ((count 0))
+      (while (< (point) end)
+        (forward-char 1)
+        (setq count (1+ count))
+        (when (and (= count n) (< (point) end))
+          (insert delimiter)
+          (setq count 0)
+          (setq end (+ end (length delimiter))))))))
+
+
+
+;; read the current buffer and copy a version of it to the clipboard with this transformation.
+;; for example:
+;; 123
+;; 523523
+;; 234978324
+;; 5
+;; means this is copied to clipboard
+;; IN ('123', '523523', '234978324', '5')
+(defun sql-in-copy ()
+  (interactive)
+  (let ((content (buffer-string)))
+    (with-temp-buffer
+      (insert "IN (")
+      (dolist (line (split-string content "\n" t))
+        (insert "'" line "', "))
+      (when (> (buffer-size) 4)
+        (delete-char -2))
+      (insert ")")
+      (kill-ring-save (point-min) (point-max))
+      (message "SQL IN clause copied to clipboard"))))
+
+
+;; now for a python list
+(defun python-list-copy ()
+  (interactive)
+  (let ((content (buffer-string)))
+    (with-temp-buffer
+      (insert "[")
+      (dolist (line (split-string content "\n" t))
+        (insert "\"" line "\", "))
+      (when (> (buffer-size) 2)
+        (delete-char -2))
+      (insert "]")
+      (kill-ring-save (point-min) (point-max))
+      (message "Python list copied to clipboard"))))
+
+
+
 (provide 'init-editing-utils)
 ;;; init-editing-utils.el ends here
