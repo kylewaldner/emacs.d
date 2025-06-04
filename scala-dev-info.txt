@@ -1,0 +1,91 @@
+Scala Development Environment Setup for Emacs
+
+This document describes the tools installed for modern Scala development with Emacs.
+
+=== Core Dependencies ===
+
+1. Java 17 (OpenJDK)
+   - Required for running Scala and SBT
+   - Verify: java -version
+
+2. SBT (Scala Build Tool)
+   - Standard build tool for Scala projects
+   - Verify: sbt --version
+
+3. Coursier
+   - Scala application launcher and dependency resolver
+   - Location: ~/.local/bin/cs
+   - Verify: cs --version
+
+=== Development Tools ===
+
+4. Scalafmt
+   - Code formatter for Scala
+   - Integrated with Emacs via apheleia
+   - Config: ~/.scalafmt.conf
+   - Verify: scalafmt --version
+
+5. Scalafix
+   - Refactoring and linting tool
+   - Verify: scalafix --version
+
+6. Scala CLI
+   - Modern Scala scripting tool
+   - Verify: scala-cli --version
+
+7. Metals LSP Server
+   - Language Server Protocol implementation for Scala
+   - Provides IDE features in Emacs via lsp-mode
+   - Automatically configured with lsp-mode
+   - Verify: metals --version
+
+=== Tree-sitter Support (Emacs 29+) ===
+
+8. Tree-sitter
+   - Fast parsing library for syntax highlighting
+   - Enables scala-ts-mode in Emacs
+   - Verify: tree-sitter --version
+
+9. Scala Tree-sitter Grammar
+   - Automatically installed during setup
+   - Located in ~/.emacs.d/tree-sitter/
+   - Provides enhanced syntax highlighting and structural editing
+   - Check status in Emacs: M-x scala-treesitter-status
+
+=== Emacs Integration ===
+
+The following Emacs packages work with these tools:
+
+- scala-mode / scala-ts-mode: Major mode for Scala files
+- lsp-mode + lsp-metals: IDE features (completion, go-to-definition, etc.)
+- sbt-mode: SBT integration
+- apheleia: Automatic formatting with Scalafmt
+- flycheck: Error checking
+- combobulate: Structural editing (tree-sitter)
+
+=== Quick Start ===
+
+1. Open a Scala file in Emacs (if using Emacs 29+, scala-ts-mode will be used automatically)
+2. LSP will prompt to import the build - accept it
+3. Use C-c l for LSP commands
+4. Use C-c C-c to compile via SBT
+5. Files are automatically formatted on save
+6. Tree-sitter provides enhanced syntax highlighting and structural editing
+
+=== Troubleshooting ===
+
+If you encounter issues:
+
+1. Check Java version: java -version (should be 11+)
+2. Verify PATH includes ~/.local/bin
+3. Run: source ~/.bashrc to reload PATH
+4. For tree-sitter issues: M-x scala-treesitter-status in Emacs
+5. To reinstall grammar: M-x install-scala-treesitter-grammar in Emacs
+6. For LSP issues: M-x lsp-doctor in Emacs
+
+For more information, see:
+- Metals documentation: https://scalameta.org/metals/
+- Tree-sitter setup: https://tree-sitter.github.io/tree-sitter/
+- SBT documentation: https://www.scala-sbt.org/
+
+Installation completed on: Wed Jun  4 02:28:28 PM EDT 2025

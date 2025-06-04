@@ -10,24 +10,24 @@
 (when (and (fboundp 'treesit-available-p) (treesit-available-p))
   ;; Install scala-ts-mode for modern tree-sitter support
   (maybe-require-package 'scala-ts-mode)
-  
+
   ;; Set up the tree-sitter grammar if needed
   (when (maybe-require-package 'scala-ts-mode)
     (add-to-list 'treesit-language-source-alist
                  '(scala "https://github.com/tree-sitter/tree-sitter-scala"))
-    
+
     ;; Auto-install grammar if not available
     (unless (treesit-language-available-p 'scala)
       (message "Scala tree-sitter grammar not found, attempting to install...")
       (condition-case err
           (treesit-install-language-grammar 'scala)
         (error (message "Failed to auto-install Scala tree-sitter grammar: %s" err))))
-    
+
     ;; Only remap if grammar is available
     (when (treesit-language-available-p 'scala)
       ;; Remap scala-mode to scala-ts-mode for better performance
       (add-to-list 'major-mode-remap-alist '(scala-mode . scala-ts-mode))
-      
+
       ;; Set up auto-mode-alist for Scala files
       (add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-ts-mode))
       (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-ts-mode)))))
@@ -129,13 +129,14 @@
 (when (maybe-require-package 'apheleia)
   ;; Scalafmt integration
   (when (executable-find "scalafmt")
-    (add-to-list 'apheleia-formatters
-                 '(scalafmt "scalafmt" "--stdin"))
-    (add-to-list 'apheleia-mode-alist
-                 '(scala-mode . scalafmt))
-    (when (featurep 'scala-ts-mode)
+    (after-load 'apheleia
+      (add-to-list 'apheleia-formatters
+                   '(scalafmt "scalafmt" "--stdin"))
       (add-to-list 'apheleia-mode-alist
-                   '(scala-ts-mode . scalafmt)))))
+                   '(scala-mode . scalafmt))
+      (when (featurep 'scala-ts-mode)
+        (add-to-list 'apheleia-mode-alist
+                     '(scala-ts-mode . scalafmt))))))
 
 ;; Enhanced error checking
 (when (maybe-require-package 'flycheck)
@@ -218,14 +219,16 @@
   "Install the Scala tree-sitter grammar if not already available."
   (interactive)
   (if (and (fboundp 'treesit-available-p) (treesit-available-p))
-      (if (treesit-language-available-p 'scala)
+      (if (and (fboundp 'treesit-language-available-p)
+               (treesit-language-available-p 'scala))
           (message "Scala tree-sitter grammar is already installed and available")
         (progn
           (message "Installing Scala tree-sitter grammar...")
           (condition-case err
               (progn
                 (treesit-install-language-grammar 'scala)
-                (if (treesit-language-available-p 'scala)
+                (if (and (fboundp 'treesit-language-available-p)
+                         (treesit-language-available-p 'scala))
                     (message "✓ Scala tree-sitter grammar installed successfully!")
                   (message "⚠ Grammar installation completed but language not available")))
             (error (message "✗ Failed to install Scala tree-sitter grammar: %s" err)))))
@@ -236,7 +239,8 @@
   "Check the status of Scala tree-sitter support."
   (interactive)
   (if (and (fboundp 'treesit-available-p) (treesit-available-p))
-      (if (treesit-language-available-p 'scala)
+      (if (and (fboundp 'treesit-language-available-p)
+               (treesit-language-available-p 'scala))
           (message "✓ Scala tree-sitter grammar is available")
         (message "⚠ Scala tree-sitter grammar is not available. Run M-x install-scala-treesitter-grammar"))
     (message "Tree-sitter is not available in this Emacs build")))

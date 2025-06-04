@@ -84,6 +84,10 @@ list_installers() {
         installers+=("scala" "Scala Dependencies (Java, SBT, Metals, Scalafmt, etc.)")
     fi
 
+    if [[ -f "$INSTALLATION_DIR/install_javascript_deps.sh" ]]; then
+        installers+=("javascript" "JavaScript/TypeScript Dependencies (LSP, Prettier, ESLint, etc.)")
+    fi
+
     # Add more installers here as they are created
     # Example:
     # if [[ -f "$INSTALLATION_DIR/install_node_deps.sh" ]]; then
@@ -116,6 +120,15 @@ run_installer() {
                 return 1
             fi
             ;;
+        "javascript")
+            if [[ -f "$INSTALLATION_DIR/install_javascript_deps.sh" ]]; then
+                print_status "Running JavaScript/TypeScript dependencies installer..."
+                bash "$INSTALLATION_DIR/install_javascript_deps.sh"
+            else
+                print_error "JavaScript installer not found!"
+                return 1
+            fi
+            ;;
         "all")
             print_status "Running all available installers..."
             local success_count=0
@@ -145,6 +158,18 @@ run_installer() {
                 echo
             fi
 
+            if [[ -f "$INSTALLATION_DIR/install_javascript_deps.sh" ]]; then
+                ((total_count++))
+                print_header "Installing JavaScript/TypeScript Dependencies..."
+                if bash "$INSTALLATION_DIR/install_javascript_deps.sh"; then
+                    ((success_count++))
+                    print_success "JavaScript/TypeScript dependencies installed successfully"
+                else
+                    print_error "JavaScript/TypeScript dependencies installation failed"
+                fi
+                echo
+            fi
+
             # Add more installers here
 
             print_status "Installation summary: $success_count/$total_count installers completed successfully"
@@ -169,7 +194,7 @@ show_menu() {
 
     # Check if any installers exist
     local has_installers=false
-    if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]]; then
+    if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_javascript_deps.sh" ]]; then
         has_installers=true
     fi
 
@@ -194,6 +219,10 @@ get_user_choice() {
         options+=("Install Scala Dependencies")
     fi
 
+    if [[ -f "$INSTALLATION_DIR/install_javascript_deps.sh" ]]; then
+        options+=("Install JavaScript/TypeScript Dependencies")
+    fi
+
     options+=("Install All Dependencies" "Quit")
 
     select choice in "${options[@]}"; do
@@ -204,6 +233,10 @@ get_user_choice() {
                 ;;
             "Install Scala Dependencies")
                 echo "scala"
+                return 0
+                ;;
+            "Install JavaScript/TypeScript Dependencies")
+                echo "javascript"
                 return 0
                 ;;
             "Install All Dependencies")
@@ -230,6 +263,7 @@ show_usage() {
     echo "  -l, --list     List available installers"
     echo "  python         Install Python dependencies"
     echo "  scala          Install Scala dependencies"
+    echo "  javascript     Install JavaScript/TypeScript dependencies"
     echo "  all            Install all dependencies"
     echo
     echo "If no option is provided, interactive menu will be shown."
@@ -263,7 +297,7 @@ main() {
             done
             exit 0
             ;;
-        "python"|"scala"|"all")
+        "python"|"scala"|"javascript"|"all")
             check_installation_dir
             run_installer "$arg"
             exit $?
