@@ -39,8 +39,14 @@
 
 
 
-(when (maybe-require-package 'regex-tool)
-  (setq-default regex-tool-backend 'perl))
+;; Replaced regex-tool with built-in rx macro for better regex building
+;; Old: (when (maybe-require-package 'regex-tool)
+;;        (setq-default regex-tool-backend 'perl))
+;; Use built-in rx macro instead: (rx ...) or visual-regexp package
+(maybe-require-package 'visual-regexp)
+(maybe-require-package 'visual-regexp-steroids)
+(global-set-key (kbd "C-c r") 'vr/replace)
+(global-set-key (kbd "C-c q") 'vr/query-replace)
 
 (after-load 're-builder
   ;; Support a slightly more idiomatic quit binding in re-builder

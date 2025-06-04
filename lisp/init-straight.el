@@ -44,7 +44,22 @@
 
 ;; Essential packages loaded immediately
 (use-package scratch)
-(use-package command-log-mode)
+(use-package keycast)  ; Modern real-time command display
+(use-package restclient)
+
+;; Modern session management (replaces old session package)
+(use-package emacs
+  :config
+  ;; Save minibuffer history
+  (savehist-mode 1)
+  ;; Remember cursor position in files
+  (save-place-mode 1)
+  ;; Track recently opened files
+  (recentf-mode 1)
+  (setq recentf-max-menu-items 25
+        recentf-max-saved-items 25)
+  ;; Auto-save bookmarks
+  (setq bookmark-save-flag 1))
 
 ;; COMPATIBILITY: Legacy functions for incremental migration
 ;; These functions allow gradual conversion from package.el style to use-package

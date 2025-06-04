@@ -213,11 +213,6 @@ there is no current file, eval the current buffer."
 (add-to-list 'auto-mode-alist '("\\.emacs-project\\'" . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("archive-contents\\'" . emacs-lisp-mode))
 
-;; drop obsolete package
-;; (require-package 'cl-lib-highlight)
-;; (after-load 'lisp-mode
-;;   (cl-lib-highlight-initialize))
-
 ;; ----------------------------------------------------------------------------
 ;; Delete .elc files when reverting the .el from VC or magit
 ;; ----------------------------------------------------------------------------
@@ -295,8 +290,6 @@ there is no current file, eval the current buffer."
   (define-key ert-results-mode-map (kbd "g") 'ert-results-rerun-all-tests))
 
 
-(maybe-require-package 'cl-libify)
-
 (maybe-require-package 'cask-mode)
 
 (provide 'init-lisp)

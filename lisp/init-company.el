@@ -16,8 +16,6 @@
       (delq backend company-backends))
     (when (maybe-require-package 'company-statistics)
       (company-statistics-mode))
-    (when (maybe-require-package 'company-jedi)
-      (add-to-list 'company-backends 'company-jedi))
     (when (maybe-require-package 'company-restclient)
       (add-to-list 'company-backends 'company-restclient))
     (diminish 'company-mode)

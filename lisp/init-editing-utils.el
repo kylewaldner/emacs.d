@@ -164,7 +164,9 @@
 ;;----------------------------------------------------------------------------
 ;; Expand region
 ;;----------------------------------------------------------------------------
-(require-package 'expand-region)
+;; Suppress cl deprecation warning for expand-region
+(with-suppressed-warnings ((obsolete cl-lib))
+  (require-package 'expand-region))
 (global-set-key (kbd "C-=") 'er/expand-region)
 (global-set-key (kbd "C--") 'er/contract-region)
 
@@ -202,7 +204,10 @@
   (global-set-key (kbd "C-;") 'avy-goto-word-1)
   (setq avy-all-windows nil))
 
-(require-package 'multiple-cursors)
+;; Suppress cl deprecation warning for multiple-cursors
+(with-suppressed-warnings ((obsolete cl-lib))
+  (require-package 'multiple-cursors))
+
 ;; multiple-cursors
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)

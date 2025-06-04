@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'subr-x)  ; For when-let (built-in since Emacs 26)
+
 (when (maybe-require-package 'flycheck)
   ;; (add-hook 'after-init-hook 'global-flycheck-mode)
   ;; this hook only turns on flycheck in local programming mode files
@@ -39,7 +41,7 @@
   "Add eslint ignore comment above the current line if there is an eslint error."
   (interactive)
   (when flycheck-mode
-    (-when-let (errors (flycheck-overlay-errors-at (point)))
+    (when-let (errors (flycheck-overlay-errors-at (point)))
       (kyle/insert-line-with-text-above
        (concat "// eslint-disable-next-line "
                (string-join

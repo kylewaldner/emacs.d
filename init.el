@@ -75,7 +75,6 @@
 (require 'init-whitespace)
 
 (require 'init-vc)
-(require 'init-darcs)
 (require 'init-git)
 (require 'init-github)
 
@@ -119,8 +118,6 @@
 (require 'init-paredit)
 (require 'init-lisp)
 (require 'init-slime)
-(require 'init-clojure)
-(require 'init-clojure-cider)
 (require 'init-common-lisp)
 
 (when *spell-check-support-enabled*
@@ -143,7 +140,6 @@
 ;; Extra packages which don't require any configuration
 
 (require-package 'sudo-edit)
-(require-package 'gnuplot)
 (require-package 'lua-mode)
 (require-package 'htmlize)
 (require-package 'dsvn)
