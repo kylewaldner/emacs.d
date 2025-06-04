@@ -22,6 +22,15 @@
 (when  (maybe-require-package 'undo-tree)
   (global-undo-tree-mode)
   (diminish 'undo-tree-mode)
+  ;; Configure undo-tree to store history files in ~/.emacs.d/undo-tree/
+  (setq undo-tree-history-directory-alist
+        `(("." . ,(expand-file-name "undo-tree" user-emacs-directory))))
+  ;; Create the directory if it doesn't exist
+  (let ((undo-tree-dir (expand-file-name "undo-tree" user-emacs-directory)))
+    (unless (file-directory-p undo-tree-dir)
+      (make-directory undo-tree-dir t)))
+  ;; Enable auto-save of undo history
+  (setq undo-tree-auto-save-history t)
   (define-key undo-tree-map (kbd "C-x u") 'undo-tree-visualize)
   (define-key undo-tree-map (kbd "C-/") 'undo-tree-undo))
 

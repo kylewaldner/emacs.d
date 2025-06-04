@@ -57,3 +57,4 @@ projectile.cache
 /games
 /eln-cache
 company-statistics-cache.el
+/undo-tree
