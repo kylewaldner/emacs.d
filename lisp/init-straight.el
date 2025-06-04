@@ -69,7 +69,11 @@
   "Install given PACKAGE using straight.el.
 MIN-VERSION and NO-REFRESH are ignored for compatibility.
 This is a compatibility function - migrate to 'use-package' declarations."
-  (straight-use-package package)
+  ;; Suppress cl deprecation warnings for packages that still use cl
+  (if (memq package '(expand-region multiple-cursors forge irony))
+      (with-suppressed-warnings ((obsolete cl-lib))
+        (straight-use-package package))
+    (straight-use-package package))
   t)
 
 (defun maybe-require-package (package &optional min-version no-refresh)
@@ -78,7 +82,11 @@ MIN-VERSION and NO-REFRESH are ignored for compatibility.
 This is a compatibility function - migrate to 'use-package' declarations."
   (condition-case err
       (progn
-        (straight-use-package package)
+        ;; Suppress cl deprecation warnings for packages that still use cl
+        (if (memq package '(expand-region multiple-cursors forge irony))
+            (with-suppressed-warnings ((obsolete cl-lib))
+              (straight-use-package package))
+          (straight-use-package package))
         t)
     (error
      (message "Couldn't install optional package `%s': %S" package err)
