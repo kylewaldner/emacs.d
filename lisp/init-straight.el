@@ -4,6 +4,10 @@
 ;; and use-package for clean configuration.
 ;;; Code:
 
+;; Suppress deprecated cl package warnings from legacy packages
+(setq warning-suppress-log-types '((obsolete)))
+(setq warning-suppress-types '((obsolete)))
+
 ;; Bootstrap straight.el if not already installed
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -70,9 +74,8 @@
 MIN-VERSION and NO-REFRESH are ignored for compatibility.
 This is a compatibility function - migrate to 'use-package' declarations."
   ;; Suppress cl deprecation warnings for packages that still use cl
-  (if (memq package '(expand-region multiple-cursors forge irony))
-      (with-suppressed-warnings ((obsolete cl-lib))
-        (straight-use-package package))
+  (let ((warning-suppress-log-types (append warning-suppress-log-types '((obsolete))))
+        (warning-suppress-types (append warning-suppress-types '((obsolete)))))
     (straight-use-package package))
   t)
 
@@ -83,9 +86,8 @@ This is a compatibility function - migrate to 'use-package' declarations."
   (condition-case err
       (progn
         ;; Suppress cl deprecation warnings for packages that still use cl
-        (if (memq package '(expand-region multiple-cursors forge irony))
-            (with-suppressed-warnings ((obsolete cl-lib))
-              (straight-use-package package))
+        (let ((warning-suppress-log-types (append warning-suppress-log-types '((obsolete))))
+              (warning-suppress-types (append warning-suppress-types '((obsolete)))))
           (straight-use-package package))
         t)
     (error

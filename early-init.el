@@ -45,6 +45,13 @@
       straight-cache-autoloads t
       straight-vc-git-default-clone-depth 1)
 
+;; Suppress deprecated cl package warnings from legacy packages
+;; This prevents "Package cl is deprecated" warnings that occur when
+;; third-party packages still use the old cl library
+(setq byte-compile-warnings '(not obsolete))
+(setq warning-suppress-log-types '((obsolete)))
+(setq warning-suppress-types '((obsolete)))
+
 ;; So we can detect this having been loaded
 (provide 'early-init)
 
