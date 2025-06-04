@@ -9,14 +9,14 @@
 (add-to-list 'completion-styles 'initials t)
 
 
-(when (maybe-require-package 'company)
+(when (straight-use-package 'company)
   (add-hook 'after-init-hook 'global-company-mode)
   (after-load 'company
     (dolist (backend '(company-eclim company-semantic))
       (delq backend company-backends))
-    (when (maybe-require-package 'company-statistics)
+    (when (straight-use-package 'company-statistics)
       (company-statistics-mode))
-    (when (maybe-require-package 'company-restclient)
+    (when (straight-use-package 'company-restclient)
       (add-to-list 'company-backends 'company-restclient))
     (diminish 'company-mode)
     (setq company-global-modes '(not eshell-mode shell-mode term-mode))
@@ -30,7 +30,7 @@
                   company-selection-wrap-around t
                   company-minimum-prefix-length 1))
   (global-set-key (kbd "M-C-/") 'company-complete)
-  (when (maybe-require-package 'company-quickhelp)
+  (when (straight-use-package 'company-quickhelp)
     (add-hook 'after-init-hook 'company-quickhelp-mode)))
 
 ;; Suspend page-break-lines-mode while company menu is active

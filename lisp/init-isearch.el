@@ -3,7 +3,7 @@
 ;;; Code:
 
 ;; Show number of matches while searching
-(when (maybe-require-package 'anzu)
+(when (straight-use-package 'anzu)
   (add-hook 'after-init-hook 'global-anzu-mode)
   (setq anzu-mode-lighter "")
   (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)

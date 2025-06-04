@@ -6,7 +6,7 @@
 
 ;; (add-hook 'cpp-mode-hook 'lsp)
 
-;; (maybe-require-package 'lsp-treemacs)
+;; (straight-use-package 'lsp-treemacs)
 
 ;; ;; (setq gc-cons-threshold (* 100 1024 1024)
 ;; ;;       read-process-output-max (*1024 1024)
@@ -26,7 +26,7 @@
 
 ;; all this stuff should work for irony
 
-(when (maybe-require-package 'irony)
+(when (straight-use-package 'irony)
   ;; (unless (irony-find-server-executable) (call-interactively #'irony-install-server))
   (add-hook 'c++-mode-hook 'irony-mode)
   (add-hook 'c-mode-hook 'irony-mode)
@@ -34,18 +34,18 @@
                                                    irony-cdb-clang-complete))
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
-(when (maybe-require-package 'company-irony)
+(when (straight-use-package 'company-irony)
   (eval-after-load 'company '(add-to-list 'company-backends 'company-irony)))
 
-(when (maybe-require-package 'flycheck-irony)
+(when (straight-use-package 'flycheck-irony)
   (eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
 
-(when (maybe-require-package 'irony-eldoc)
+(when (straight-use-package 'irony-eldoc)
   (add-hook 'irony-mode-hook #'irony-eldoc))
 
 ;;;;;;;;;;;;;;;;;;;
 
-;; (when (maybe-require-package 'rtags)
+;; (when (straight-use-package 'rtags)
 ;; ;;  (unless (rtags-executable-find "rc") (error "Binary rc is not installed!"))
 ;; ;;  (unless (rtags-executable-find "rdm") (error "Binary rdm is not installed!"))
 
@@ -55,13 +55,13 @@
 ;;   (rtags-enable-standard-keybindings)
 ;;   (add-hook 'kill-emacs-hook 'rtags-quit-rdm))
 
-;; (when (maybe-require-package 'company-rtags)
+;; (when (straight-use-package 'company-rtags)
 ;;   (setq rtags-autostart-diagnostics t)
 ;;   (rtags-diagnostics)
 ;;   (setq rtags-completions-enabled t)
 ;;   (eval-after-load 'company '(add-to-list 'company-backends 'company-rtags)))
 
-;; (when (maybe-require-package 'flycheck-rtags)
+;; (when (straight-use-package 'flycheck-rtags)
 ;;   ;; ensure that we use only rtags checking
 ;;   ;; https://github.com/Andersbakken/rtags#optional-1
 ;;   (defun setup-flycheck-rtags ()

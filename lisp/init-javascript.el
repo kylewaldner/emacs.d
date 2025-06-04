@@ -4,11 +4,11 @@
 ;;; Code:
 
 ;;; Core Requirements
-(require-package 'lsp-mode)
-(require-package 'lsp-ui)
-(require-package 'company)
-(require-package 'flycheck)
-(require-package 'projectile)
+(straight-use-package 'lsp-mode)
+(straight-use-package 'lsp-ui)
+(straight-use-package 'company)
+(straight-use-package 'flycheck)
+(straight-use-package 'projectile)
 
 ;;; JavaScript/TypeScript Modes
 
@@ -50,10 +50,10 @@
 ;; Fallback to traditional modes for older Emacs or missing grammars
 (unless (and (fboundp 'treesit-available-p) (treesit-available-p))
   ;; Install traditional JS/TS packages
-  (require-package 'js2-mode)
-  (require-package 'typescript-mode)
-  (require-package 'rjsx-mode)
-  (require-package 'json-mode)
+  (straight-use-package 'js2-mode)
+  (straight-use-package 'typescript-mode)
+  (straight-use-package 'rjsx-mode)
+  (straight-use-package 'json-mode)
 
   ;; File associations
   (add-to-list 'auto-mode-alist '("\\.\\(js\\|mjs\\|cjs\\)\\'" . js2-mode))
@@ -71,7 +71,7 @@
     (add-hook 'js2-mode-hook (lambda () (setq mode-name "JS2")))))
 
 ;;; Web Development Support
-(require-package 'web-mode)
+(straight-use-package 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
@@ -86,7 +86,7 @@
 
 ;;; Language Server Protocol (LSP) Setup
 
-(when (maybe-require-package 'lsp-mode)
+(when (straight-use-package 'lsp-mode)
   ;; Performance optimizations
   (setq lsp-keymap-prefix "C-c l"
         lsp-idle-delay 0.5
@@ -128,7 +128,7 @@
                   (lsp-deferred))))))
 
 ;;; LSP UI Enhancements
-(when (maybe-require-package 'lsp-ui)
+(when (straight-use-package 'lsp-ui)
   (setq lsp-ui-doc-enable t
         lsp-ui-doc-position 'at-point
         lsp-ui-doc-delay 0.5
@@ -142,7 +142,7 @@
   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 ;;; Completion with Company
-(when (maybe-require-package 'company)
+(when (straight-use-package 'company)
   (setq company-minimum-prefix-length 1
         company-idle-delay 0.2
         company-tooltip-align-annotations t)
@@ -155,7 +155,7 @@
     (add-hook (intern (concat (symbol-name mode) "-hook")) 'company-mode)))
 
 ;;; Syntax Checking with Flycheck
-(when (maybe-require-package 'flycheck)
+(when (straight-use-package 'flycheck)
   ;; Enable flycheck for JS/TS modes
   (dolist (mode '(js-mode js2-mode js-ts-mode
                   typescript-mode typescript-ts-mode
@@ -170,7 +170,7 @@
 ;;; Code Formatting
 
 ;; Modern formatting with apheleia (recommended)
-(when (maybe-require-package 'apheleia)
+(when (straight-use-package 'apheleia)
   (after-load 'apheleia
     ;; Prettier for JS/TS/JSON
     (when (or (executable-find "prettier")
@@ -204,13 +204,13 @@
 
 ;; Fallback: prettier-js package (legacy)
 (unless (package-installed-p 'apheleia)
-  (when (maybe-require-package 'prettier-js)
+  (when (straight-use-package 'prettier-js)
     (add-hook 'js2-mode-hook 'prettier-js-mode)
     (add-hook 'rjsx-mode-hook 'prettier-js-mode)
     (add-hook 'typescript-mode-hook 'prettier-js-mode)))
 
 ;;; Project Management
-(when (maybe-require-package 'npm-mode)
+(when (straight-use-package 'npm-mode)
   (add-hook 'js-mode-hook 'npm-mode)
   (add-hook 'js2-mode-hook 'npm-mode)
   (add-hook 'typescript-mode-hook 'npm-mode)
@@ -222,7 +222,7 @@
     (add-hook 'typescript-ts-mode-hook 'npm-mode)))
 
 ;; Add node_modules/.bin to PATH
-(when (maybe-require-package 'add-node-modules-path)
+(when (straight-use-package 'add-node-modules-path)
   (dolist (mode '(js-mode js2-mode js-ts-mode
                   typescript-mode typescript-ts-mode
                   tsx-ts-mode rjsx-mode))
@@ -231,7 +231,7 @@
 ;;; REPL and Interactive Development
 
 ;; Node.js REPL
-(when (maybe-require-package 'nodejs-repl)
+(when (straight-use-package 'nodejs-repl)
   (setq nodejs-repl-command "node")
 
   (defun setup-nodejs-repl-keybindings ()
@@ -250,13 +250,13 @@
     (add-hook 'js-ts-mode-hook 'setup-nodejs-repl-keybindings)))
 
 ;; Alternative: Skewer for live browser interaction
-(when (maybe-require-package 'skewer-mode)
+(when (straight-use-package 'skewer-mode)
   (skewer-setup))
 
 ;;; Documentation and Code Navigation
 
 ;; JSDoc support
-(when (maybe-require-package 'js-doc)
+(when (straight-use-package 'js-doc)
   (defun setup-js-doc-keybindings ()
     "Set up keybindings for JS documentation."
     (local-set-key (kbd "C-c d") 'js-doc-insert-function-doc)
@@ -273,14 +273,14 @@
     (add-hook 'typescript-ts-mode-hook 'setup-js-doc-keybindings)))
 
 ;;; Snippets
-(when (maybe-require-package 'yasnippet)
+(when (straight-use-package 'yasnippet)
   (dolist (mode '(js-mode js2-mode js-ts-mode
                   typescript-mode typescript-ts-mode
                   tsx-ts-mode rjsx-mode))
     (add-hook (intern (concat (symbol-name mode) "-hook")) 'yas-minor-mode)))
 
 ;;; Structural Editing (Tree-sitter)
-(when (and (maybe-require-package 'combobulate)
+(when (and (straight-use-package 'combobulate)
            (fboundp 'treesit-available-p)
            (treesit-available-p))
   (when (and (fboundp 'treesit-language-available-p)

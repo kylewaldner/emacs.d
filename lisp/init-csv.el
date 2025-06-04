@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require-package 'csv-mode)
+(straight-use-package 'csv-mode)
 
 (add-auto-mode 'csv-mode "\\.[Cc][Ss][Vv]\\'")
 

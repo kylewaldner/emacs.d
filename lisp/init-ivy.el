@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (maybe-require-package 'ivy)
+(when (straight-use-package 'ivy)
   (add-hook 'after-init-hook 'ivy-mode)
   (after-load 'ivy
     (setq-default ivy-use-virtual-buffers t
@@ -23,28 +23,28 @@
 
     (define-key ivy-occur-mode-map (kbd "C-c C-q") #'ivy-wgrep-change-to-wgrep-mode)
 
-    (when (maybe-require-package 'diminish)
+    (when (straight-use-package 'diminish)
       (diminish 'ivy-mode)))
 
   (defun sanityinc/enable-ivy-flx-matching ()
     "Make `ivy' matching work more like IDO."
     (interactive)
-    (require-package 'flx)
+    (straight-use-package 'flx)
     (setq-default ivy-re-builders-alist
                   '((t . ivy--regex-fuzzy)))))
 
-(when (maybe-require-package 'counsel)
+(when (straight-use-package 'counsel)
   (setq-default counsel-mode-override-describe-bindings t)
   (after-load 'counsel
     (setq-default ivy-initial-inputs-alist
                   '((Man-completion-table . "^")
                     (woman . "^"))))
-  (when (maybe-require-package 'diminish)
+  (when (straight-use-package 'diminish)
     (after-load 'counsel
       (diminish 'counsel-mode)))
   (add-hook 'after-init-hook 'counsel-mode)
 
-  (when (maybe-require-package 'projectile)
+  (when (straight-use-package 'projectile)
     (let ((search-function
            (cond
             ((executable-find "rg") 'counsel-rg)
@@ -72,12 +72,12 @@ instead."
     (global-set-key (kbd "M-?") 'sanityinc/counsel-search-project)))
 
 
-(when (maybe-require-package 'swiper)
+(when (straight-use-package 'swiper)
   (after-load 'ivy
     (define-key ivy-mode-map (kbd "M-s /") 'swiper-thing-at-point)))
 
 
-(when (maybe-require-package 'ivy-xref)
+(when (straight-use-package 'ivy-xref)
   (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
 
 

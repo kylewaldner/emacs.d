@@ -2,14 +2,14 @@
 ;;; Commentary:
 ;;; Code:
 
-(require-package 'unfill)
+(straight-use-package 'unfill)
 
 (when (fboundp 'electric-pair-mode)
   (add-hook 'after-init-hook 'electric-pair-mode))
 (when (eval-when-compile (version< "24.4" emacs-version))
   (add-hook 'after-init-hook 'electric-indent-mode))
 
-(maybe-require-package 'list-unicode-display)
+(straight-use-package 'list-unicode-display)
 
 ;;----------------------------------------------------------------------------
 ;; Some basic preferences
@@ -52,7 +52,7 @@
 
 ;; Huge files
 
-(require-package 'vlf)
+(straight-use-package 'vlf)
 
 (defun ffap-vlf ()
   "Find file at point with VLF."
@@ -64,12 +64,12 @@
 
 
 ;;; A simple visible bell which works in all terminal types
-(require-package 'mode-line-bell)
+(straight-use-package 'mode-line-bell)
 (add-hook 'after-init-hook 'mode-line-bell-mode)
 
 
 
-(when (maybe-require-package 'beacon)
+(when (straight-use-package 'beacon)
   (setq-default beacon-lighter "")
   (setq-default beacon-size 20)
   (add-hook 'after-init-hook 'beacon-mode))
@@ -100,7 +100,7 @@
   (setq-default display-line-numbers-width 3)
   (add-hook 'prog-mode-hook 'display-line-numbers-mode))
 
-(when (maybe-require-package 'goto-line-preview)
+(when (straight-use-package 'goto-line-preview)
   (global-set-key [remap goto-line] 'goto-line-preview)
 
   (when (fboundp 'display-line-numbers-mode)
@@ -110,7 +110,7 @@
     (advice-add 'goto-line-preview :around #'sanityinc/with-display-line-numbers)))
 
 
-(when (require-package 'rainbow-delimiters)
+(when (straight-use-package 'rainbow-delimiters)
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
 
@@ -120,7 +120,7 @@
 ;;   (add-hook 'after-init-hook 'global-prettify-symbols-mode))
 
 
-(when (maybe-require-package 'symbol-overlay)
+(when (straight-use-package 'symbol-overlay)
   (dolist (hook '(prog-mode-hook html-mode-hook yaml-mode-hook conf-mode-hook))
     (add-hook hook 'symbol-overlay-mode))
   (after-load 'symbol-overlay
@@ -138,7 +138,7 @@
 
 
 
-(require-package 'browse-kill-ring)
+(straight-use-package 'browse-kill-ring)
 (setq browse-kill-ring-separator "\f")
 (global-set-key (kbd "M-Y") 'browse-kill-ring)
 (after-load 'browse-kill-ring
@@ -164,7 +164,7 @@
 ;;----------------------------------------------------------------------------
 ;; Expand region
 ;;----------------------------------------------------------------------------
-(require-package 'expand-region)
+(straight-use-package 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 (global-set-key (kbd "C--") 'er/contract-region)
 
@@ -196,13 +196,13 @@
 (global-set-key (kbd "C-.") 'set-mark-command)
 (global-set-key (kbd "C-x C-.") 'pop-global-mark)
 
-(when (maybe-require-package 'avy)
+(when (straight-use-package 'avy)
   (global-set-key (kbd "M-;") 'avy-goto-char-timer)
   (global-set-key (kbd "C-M-;") 'avy-goto-line)
   (global-set-key (kbd "C-;") 'avy-goto-word-1)
   (setq avy-all-windows nil))
 
-(require-package 'multiple-cursors)
+(straight-use-package 'multiple-cursors)
 
 ;; multiple-cursors
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
@@ -229,7 +229,7 @@
 ;;----------------------------------------------------------------------------
 ;; Page break lines
 ;;----------------------------------------------------------------------------
-(when (maybe-require-package 'page-break-lines)
+(when (straight-use-package 'page-break-lines)
   (add-hook 'after-init-hook 'global-page-break-lines-mode)
   (after-load 'page-break-lines
     (diminish 'page-break-lines-mode)))
@@ -239,7 +239,7 @@
 ;; it will use those keybindings. For this reason, you might prefer to
 ;; use M-S-up and M-S-down, which will work even in lisp modes.
 ;;----------------------------------------------------------------------------
-(require-package 'move-dup)
+(straight-use-package 'move-dup)
 (global-set-key [M-up] 'md-move-lines-up)
 (global-set-key [M-down] 'md-move-lines-down)
 (global-set-key [M-S-up] 'md-move-lines-up)
@@ -268,7 +268,7 @@
 ;;----------------------------------------------------------------------------
 ;; Cut/copy the current line if no region is active
 ;;----------------------------------------------------------------------------
-(require-package 'whole-line-or-region)
+(straight-use-package 'whole-line-or-region)
 (add-hook 'after-init-hook 'whole-line-or-region-global-mode)
 (after-load 'whole-line-or-region
   (diminish 'whole-line-or-region-local-mode))
@@ -348,11 +348,11 @@ With arg N, insert N newlines."
 
 
 
-(require-package 'highlight-escape-sequences)
+(straight-use-package 'highlight-escape-sequences)
 (add-hook 'after-init-hook 'hes-mode)
 
 
-(require-package 'which-key)
+(straight-use-package 'which-key)
 (add-hook 'after-init-hook 'which-key-mode)
 (setq-default which-key-idle-delay 1.5)
 (after-load 'which-key

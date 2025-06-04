@@ -47,7 +47,7 @@ Fix for the above hasn't been released as of Emacs 25.2."
 (add-hook 'sql-interactive-mode-hook 'sanityinc/font-lock-everything-in-sql-interactive-mode)
 
 
-(require-package 'sqlformat)
+(straight-use-package 'sqlformat)
 (after-load 'sql
   (define-key sql-mode-map (kbd "C-c C-f") 'sqlformat))
 

@@ -6,13 +6,13 @@
 
 ;;; Code:
 
-(require-package 'fullframe)
+(straight-use-package 'fullframe)
 ;; (after-load 'ibuffer
 ;;  (fullframe ibuffer ibuffer-quit))
 ;; dont force buffer menu be fullscreen
 
 
-(require-package 'ibuffer-vc)
+(straight-use-package 'ibuffer-vc)
 
 (defun ibuffer-set-up-preferred-filters ()
   (ibuffer-vc-set-filter-groups-by-vc-root)

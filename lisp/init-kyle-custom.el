@@ -9,17 +9,17 @@
 ;; other things, fix the window swtiching letter thing
 ;; less auto-complete delay
 
-(when (maybe-require-package 'multi-term)
+(when (straight-use-package 'multi-term)
   (setq multi-term-program "/bin/bash"))
 ;; TODO: get nice colors for multi term
 
-;; (when (maybe-require-package 'auto-highlight-symbol-mode)
+;; (when (straight-use-package 'auto-highlight-symbol-mode)
 ;;   (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode))
 
 
-(maybe-require-package 'tern)
+(straight-use-package 'tern)
 
-(when  (maybe-require-package 'undo-tree)
+(when  (straight-use-package 'undo-tree)
   (global-undo-tree-mode)
   (diminish 'undo-tree-mode)
   ;; Configure undo-tree to store history files in ~/.emacs.d/undo-tree/
@@ -38,7 +38,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; no
-;; (when  (maybe-require-package 'dumb-jump)
+;; (when  (straight-use-package 'dumb-jump)
 ;;   (dumb-jump-mode))
 
 

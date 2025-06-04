@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (maybe-require-package 'purescript-mode)
+(when (straight-use-package 'purescript-mode)
   (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)
 
   (add-hook 'purescript-mode-hook
@@ -14,11 +14,11 @@
   (after-load 'purescript-mode
     (define-key purescript-mode-map (kbd "C-o") 'open-line))
 
-  (when (maybe-require-package 'reformatter)
+  (when (straight-use-package 'reformatter)
     (reformatter-define purty
       :program "purty" :lighter " purty"))
 
-  (when (maybe-require-package 'psc-ide)
+  (when (straight-use-package 'psc-ide)
     (add-hook 'purescript-mode-hook 'psc-ide-mode)
     (add-hook 'psc-ide-mode-hook
               (lambda ()
@@ -52,10 +52,10 @@ corresponding .purs file is open."
           (add-hook 'after-save-hook 'psc-ide-foreign-js-after-save-handler nil t)
         (remove-hook 'after-save-hook 'psc-ide-foreign-js-after-save-handler t))))
 
-  (when (maybe-require-package 'psci)
+  (when (straight-use-package 'psci)
     (add-hook 'purescript-mode-hook 'inferior-psci-mode))
 
-  (when (maybe-require-package 'add-node-modules-path)
+  (when (straight-use-package 'add-node-modules-path)
     (after-load 'purescript-mode
       (add-hook 'purescript-mode-hook 'add-node-modules-path))
     (after-load 'psci

@@ -6,7 +6,7 @@
 ;; $ sudo aptitude install libpoppler-glib-dev
 ;; $ sudo aptitude install libpoppler-private-dev
 
-;; (maybe-require-package 'pdf-tools)
+;; (straight-use-package 'pdf-tools)
 
 ;; (pdf-tools-install)
 

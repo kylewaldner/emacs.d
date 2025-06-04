@@ -12,7 +12,7 @@
   (interactive "sC indent value:")
   (setq c-basic-offset (string-to-number indent-amount)))
 
-(when (maybe-require-package 'irony)
+(when (straight-use-package 'irony)
   ;; If irony server was never installed, install it.
   (require 'irony)
   (unless (irony--find-server-executable) (call-interactively #'irony-install-server))
@@ -24,28 +24,28 @@
                                                   irony-cdb-clang-complete))
 
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-  (when (and (maybe-require-package 'company-irony) (maybe-require-package 'company-irony-c-headers))
+  (when (and (straight-use-package 'company-irony) (straight-use-package 'company-irony-c-headers))
     (eval-after-load 'company '(add-to-list 'company-backends '(company-irony-c-headers company-irony))))
 
 
-  (when (maybe-require-package 'flycheck-irony)
+  (when (straight-use-package 'flycheck-irony)
     (eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
 
-  (when (maybe-require-package 'irony-eldoc)
+  (when (straight-use-package 'irony-eldoc)
     (add-hook 'irony-mode-hook #'irony-eldoc))
   )
 
-;; (when (maybe-require-package 'cmake-ide)
+;; (when (straight-use-package 'cmake-ide)
 ;;   (cmake-ide-setup))
 
-(maybe-require-package 'cmake-mode)
-(maybe-require-package 'cmake-font-lock)
+(straight-use-package 'cmake-mode)
+(straight-use-package 'cmake-font-lock)
 
 (setq kyle/use-rtags nil)
 
 ;; (require 'cc-mode)
 
-;; (require-package 'rtags)
+;; (straight-use-package 'rtags)
 
 ;; (when (require 'rtags)
 ;;   ;; (unless (rtags-executable-find "rc") (error "Binary rc is not installed"))
@@ -54,7 +54,7 @@
 ;;   (define-key c-mode-base-map (kbd "M-,") 'rtags-find-references-at-point)
 ;;   (define-key c-mode-base-map (kbd "M-?") 'rtags-display-summary)
 ;;   (rtags-enable-standard-keybindings)
-;;   (when (maybe-require-package 'company-rtags)
+;;   (when (straight-use-package 'company-rtags)
 ;;     (setq rtags-autostart-diagnostics t)
 ;;     (rtags-diagnostics)
 ;;     (setq rtags-completions-enabled t)
@@ -63,7 +63,7 @@
 ;;   )
 
 
-;; (when (and (maybe-require-package 'flycheck-rtags) kyle/use-rtags)
+;; (when (and (straight-use-package 'flycheck-rtags) kyle/use-rtags)
 ;;   ;; ensure that we use only rtags checking
 ;;   ;; https://github.com/Andersbakken/rtags#optional-1
 ;;   (defun setup-flycheck-rtags ()

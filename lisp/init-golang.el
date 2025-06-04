@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require-package 'go-mode)
+(straight-use-package 'go-mode)
 
 (setq gofmt-command "goimports")
 
@@ -11,11 +11,11 @@
           (lambda ()
             (add-hook 'before-save-hook 'gofmt-before-save)))
 
-(when (maybe-require-package 'lsp-mode)
+(when (straight-use-package 'lsp-mode)
   (add-hook 'go-mode-hook 'lsp))
 
-(when (maybe-require-package 'lsp-ui)
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+(when (straight-use-package 'lsp-ui)
+  (add-hook 'go-mode-hook 'flycheck-mode))
 
 
 

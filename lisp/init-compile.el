@@ -4,7 +4,7 @@
 
 (setq-default compilation-scroll-output t)
 
-(require-package 'alert)
+(straight-use-package 'alert)
 
 ;; Customize `alert-default-style' to get messages after compilation
 
@@ -63,7 +63,7 @@
   (add-hook 'compilation-filter-hook 'sanityinc/colourise-compilation-buffer))
 
 
-(maybe-require-package 'cmd-to-echo)
+(straight-use-package 'cmd-to-echo)
 
 
 (provide 'init-compile)

@@ -3,7 +3,7 @@
 ;;; Code:
 
 ;;; Basic ruby setup
-(require-package 'ruby-hash-syntax)
+(straight-use-package 'ruby-hash-syntax)
 
 (add-auto-mode 'ruby-mode
                "\\.rxml\\'"
@@ -20,7 +20,7 @@
 (after-load 'page-break-lines
   (push 'ruby-mode page-break-lines-modes))
 
-(require-package 'rspec-mode)
+(straight-use-package 'rspec-mode)
 
 
 (define-derived-mode brewfile-mode ruby-mode "Brewfile"
@@ -30,12 +30,12 @@
 
 
 ;;; Inferior ruby
-(require-package 'inf-ruby)
+(straight-use-package 'inf-ruby)
 
 
 
 ;;; Ruby compilation
-(require-package 'ruby-compilation)
+(straight-use-package 'ruby-compilation)
 
 (after-load 'ruby-mode
   (define-key ruby-mode-map [S-f7] 'ruby-compilation-this-buffer)
@@ -47,7 +47,7 @@
 
 
 ;;; Robe
-(when (maybe-require-package 'robe)
+(when (straight-use-package 'robe)
   (after-load 'ruby-mode
     (add-hook 'ruby-mode-hook 'robe-mode))
   (after-load 'robe
@@ -57,25 +57,25 @@
 
 
 ;;; ri support
-(require-package 'yari)
+(straight-use-package 'yari)
 (defalias 'ri 'yari)
 
 
 
-;; (require-package 'goto-gem)
+;; (straight-use-package 'goto-gem)
 
 
-(require-package 'bundler)
+(straight-use-package 'bundler)
 
 
-(when (maybe-require-package 'yard-mode)
+(when (straight-use-package 'yard-mode)
   (add-hook 'ruby-mode-hook 'yard-mode)
   (after-load 'yard-mode
     (diminish 'yard-mode)))
 
 
 ;;; ERB
-(require-package 'mmm-mode)
+(straight-use-package 'mmm-mode)
 
 (require 'derived)
 
@@ -107,7 +107,7 @@
 ;; Ruby - my convention for heredocs containing SQL
 ;;----------------------------------------------------------------------------
 
-;; (require-package 'mmm-mode)
+;; (straight-use-package 'mmm-mode)
 ;; (eval-after-load 'mmm-mode
 ;;   '(progn
 ;;      (mmm-add-classes

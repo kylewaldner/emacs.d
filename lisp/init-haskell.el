@@ -2,11 +2,11 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (maybe-require-package 'haskell-mode)
+(when (straight-use-package 'haskell-mode)
   (add-hook 'haskell-mode-hook 'subword-mode)
   (add-hook 'haskell-cabal-mode 'subword-mode)
 
-  (when (maybe-require-package 'dante)
+  (when (straight-use-package 'dante)
     (add-hook 'haskell-mode-hook 'dante-mode)
     (after-load 'dante
       (flycheck-add-next-checker 'haskell-dante
@@ -24,7 +24,7 @@
 
   (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
 
-  (when (maybe-require-package 'reformatter)
+  (when (straight-use-package 'reformatter)
     (reformatter-define hindent
       :program "hindent"
       :lighter " Hin")
@@ -63,7 +63,7 @@
 
 
 
-(when (maybe-require-package 'dhall-mode)
+(when (straight-use-package 'dhall-mode)
   (add-hook 'dhall-mode-hook 'stack-exec-path-mode))
 
 

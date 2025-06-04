@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require-package 'elisp-slime-nav)
+(straight-use-package 'elisp-slime-nav)
 (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
   (add-hook hook 'turn-on-elisp-slime-nav-mode))
 (add-hook 'emacs-lisp-mode-hook (lambda () (setq mode-name "ELisp")))
@@ -249,7 +249,7 @@ there is no current file, eval the current buffer."
 
 
 
-(require-package 'macrostep)
+(straight-use-package 'macrostep)
 
 (after-load 'lisp-mode
   (define-key emacs-lisp-mode-map (kbd "C-c e") 'macrostep-expand))
@@ -262,7 +262,7 @@ there is no current file, eval the current buffer."
 
 
 ;; Extras for theme editing
-(when (maybe-require-package 'rainbow-mode)
+(when (straight-use-package 'rainbow-mode)
   (defun sanityinc/enable-rainbow-mode-if-theme ()
     (when (and (buffer-file-name) (string-match-p "\\(color-theme-\\|-theme\\.el\\)" (buffer-file-name)))
       (rainbow-mode)))
@@ -273,12 +273,12 @@ there is no current file, eval the current buffer."
 
 
 
-(when (maybe-require-package 'highlight-quoted)
+(when (straight-use-package 'highlight-quoted)
   (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode))
 
 
-(when (maybe-require-package 'flycheck)
-  (require-package 'flycheck-package)
+(when (straight-use-package 'flycheck)
+  (straight-use-package 'flycheck-package)
   (after-load 'flycheck
     (after-load 'elisp-mode
       (flycheck-package-setup))))
@@ -290,7 +290,7 @@ there is no current file, eval the current buffer."
   (define-key ert-results-mode-map (kbd "g") 'ert-results-rerun-all-tests))
 
 
-(maybe-require-package 'cask-mode)
+(straight-use-package 'cask-mode)
 
 (provide 'init-lisp)
 ;;; init-lisp.el ends here

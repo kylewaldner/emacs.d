@@ -23,9 +23,9 @@
 ;;; Code:
 
 (when *is-a-mac*
-  (maybe-require-package 'grab-mac-link))
+  (straight-use-package 'grab-mac-link))
 
-(maybe-require-package 'org-cliplink)
+(straight-use-package 'org-cliplink)
 
 (define-key global-map (kbd "C-c l") 'org-store-link)
 (define-key global-map (kbd "C-c a") 'org-agenda)
@@ -356,7 +356,7 @@ typical word processor."
 
 
 
-(require-package 'org-pomodoro)
+(straight-use-package 'org-pomodoro)
 (setq org-pomodoro-keep-killed-pomodoro-time t)
 (after-load 'org-agenda
   (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro))

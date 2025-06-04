@@ -4,15 +4,15 @@
 ;;; Code:
 
 ;; Core Scala support
-(maybe-require-package 'scala-mode)
+(straight-use-package 'scala-mode)
 
 ;; Modern tree-sitter support for Scala (Emacs 29+)
 (when (and (fboundp 'treesit-available-p) (treesit-available-p))
   ;; Install scala-ts-mode for modern tree-sitter support
-  (maybe-require-package 'scala-ts-mode)
+  (straight-use-package 'scala-ts-mode)
 
   ;; Set up the tree-sitter grammar if needed
-  (when (maybe-require-package 'scala-ts-mode)
+  (when (straight-use-package 'scala-ts-mode)
     (add-to-list 'treesit-language-source-alist
                  '(scala "https://github.com/tree-sitter/tree-sitter-scala"))
 
@@ -38,7 +38,7 @@
   (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-mode)))
 
 ;; SBT integration with modern settings
-(when (maybe-require-package 'sbt-mode)
+(when (straight-use-package 'sbt-mode)
   (substitute-key-definition
    'minibuffer-complete-word
    'self-insert-command
@@ -52,7 +52,7 @@
   (setq sbt:scroll-to-bottom-on-output nil))
 
 ;; Modern LSP setup with optimized performance
-(when (maybe-require-package 'lsp-mode)
+(when (straight-use-package 'lsp-mode)
   ;; Performance optimizations
   (setq lsp-prefer-flymake nil)
   (setq lsp-keep-workspace-alive nil)
@@ -74,7 +74,7 @@
   (add-hook 'lsp-mode-hook 'lsp-enable-which-key-integration))
 
 ;; Metals language server configuration
-(when (maybe-require-package 'lsp-metals)
+(when (straight-use-package 'lsp-metals)
   (setq lsp-metals-treeview-show-when-views-received t)
   (setq lsp-metals-enable-semantic-highlighting t)
 
@@ -84,7 +84,7 @@
   (setq lsp-metals-show-inferred-type t))
 
 ;; Enhanced LSP UI
-(when (maybe-require-package 'lsp-ui)
+(when (straight-use-package 'lsp-ui)
   (setq lsp-ui-doc-enable t)
   (setq lsp-ui-doc-show-with-cursor t)
   (setq lsp-ui-doc-show-with-mouse nil)
@@ -96,7 +96,7 @@
   (setq lsp-ui-peek-show-directory t))
 
 ;; Modern completion with Corfu (if available)
-(when (maybe-require-package 'corfu)
+(when (straight-use-package 'corfu)
   (add-hook 'scala-mode-hook (lambda ()
                                (setq-local corfu-auto t)
                                (setq-local corfu-auto-delay 0.1)
@@ -104,13 +104,13 @@
                                (corfu-mode))))
 
 ;; Alternative: Company mode for completion
-(when (and (maybe-require-package 'company) (not (featurep 'corfu)))
+(when (and (straight-use-package 'company) (not (featurep 'corfu)))
   (add-hook 'scala-mode-hook 'company-mode)
   (when (featurep 'scala-ts-mode)
     (add-hook 'scala-ts-mode-hook 'company-mode)))
 
 ;; Debug Adapter Protocol support
-(when (maybe-require-package 'dap-mode)
+(when (straight-use-package 'dap-mode)
   (add-hook 'lsp-mode-hook 'dap-mode)
   (add-hook 'lsp-mode-hook 'dap-ui-mode)
 
@@ -120,13 +120,13 @@
     (dap-auto-configure-mode)))
 
 ;; Tree-sitter structural editing (Emacs 29+)
-(when (and (maybe-require-package 'combobulate)
+(when (and (straight-use-package 'combobulate)
            (fboundp 'treesit-available-p)
            (treesit-available-p))
   (add-hook 'scala-ts-mode-hook 'combobulate-mode))
 
 ;; Modern code formatting
-(when (maybe-require-package 'apheleia)
+(when (straight-use-package 'apheleia)
   ;; Scalafmt integration
   (when (executable-find "scalafmt")
     (after-load 'apheleia
@@ -139,13 +139,13 @@
                      '(scala-ts-mode . scalafmt))))))
 
 ;; Enhanced error checking
-(when (maybe-require-package 'flycheck)
+(when (straight-use-package 'flycheck)
   (add-hook 'scala-mode-hook 'flycheck-mode)
   (when (featurep 'scala-ts-mode)
     (add-hook 'scala-ts-mode-hook 'flycheck-mode)))
 
 ;; Project management integration
-(when (maybe-require-package 'projectile)
+(when (straight-use-package 'projectile)
   (after-load 'projectile
     (projectile-register-project-type 'sbt '("build.sbt")
                                       :project-file "build.sbt"
@@ -155,13 +155,13 @@
                                       :test-suffix "Spec")))
 
 ;; Snippet support
-(when (maybe-require-package 'yasnippet)
+(when (straight-use-package 'yasnippet)
   (add-hook 'scala-mode-hook 'yas-minor-mode)
   (when (featurep 'scala-ts-mode)
     (add-hook 'scala-ts-mode-hook 'yas-minor-mode)))
 
 ;; Which-key integration for LSP commands
-(when (maybe-require-package 'which-key)
+(when (straight-use-package 'which-key)
   (add-hook 'scala-mode-hook
             (lambda ()
               (which-key-add-major-mode-key-based-replacements 'scala-mode

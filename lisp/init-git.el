@@ -7,17 +7,17 @@
 
 ;; TODO: link commits from vc-log to magit-show-commit
 ;; TODO: smerge-mode
-(require-package 'git-blamed)
-;; (require-package 'gitignore-mode)
-;; (require-package 'gitconfig-mode)
+(straight-use-package 'git-blamed)
+;; (straight-use-package 'gitignore-mode)
+;; (straight-use-package 'gitconfig-mode)
 ;; instead use new bundled package
-(require-package 'git-modes)
-(when (maybe-require-package 'git-timemachine)
+(straight-use-package 'git-modes)
+(when (straight-use-package 'git-timemachine)
   (global-set-key (kbd "C-x v t") 'git-timemachine-toggle))
 
 
 
-(when (maybe-require-package 'magit)
+(when (straight-use-package 'magit)
   (setq-default magit-diff-refine-hunk t)
 
   ;; Hint: customize `magit-repository-directories' so that you can use C-u M-F12 to
@@ -42,9 +42,9 @@
 (after-load 'magit
   (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-section-up))
 
-(maybe-require-package 'magit-todos)
+(straight-use-package 'magit-todos)
 
-(require-package 'fullframe)
+(straight-use-package 'fullframe)
 ;; (after-load 'magit
 ;;   (fullframe magit-status magit-mode-quit-window))
 ;; dont force magit status to be fullscreen
@@ -68,8 +68,8 @@
 
 ;;; git-svn support
 
-;; (when (maybe-require-package 'magit-svn)
-;;   (require-package 'magit-svn)
+;; (when (straight-use-package 'magit-svn)
+;;   (straight-use-package 'magit-svn)
 ;;   (autoload 'magit-svn-enabled "magit-svn")
 ;;   (defun sanityinc/maybe-enable-magit-svn-mode ()
 ;;     (when (magit-svn-enabled)

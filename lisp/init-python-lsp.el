@@ -25,14 +25,14 @@
 (setq python-indent-offset 4)
 
 ;; Required packages
-(require-package 'lsp-mode)
-(require-package 'lsp-ui)
-(require-package 'company)
-(require-package 'flycheck)
-(require-package 'pip-requirements)
+(straight-use-package 'lsp-mode)
+(straight-use-package 'lsp-ui)
+(straight-use-package 'company)
+(straight-use-package 'flycheck)
+(straight-use-package 'pip-requirements)
 
 ;; LSP-mode configuration
-(when (maybe-require-package 'lsp-mode)
+(when (straight-use-package 'lsp-mode)
   (setq lsp-keymap-prefix "C-c l")
   
   ;; Performance optimizations
@@ -62,7 +62,7 @@
                 (lsp-deferred)))))
 
 ;; LSP UI enhancements
-(when (maybe-require-package 'lsp-ui)
+(when (straight-use-package 'lsp-ui)
   (setq lsp-ui-doc-enable t
         lsp-ui-doc-position 'at-point
         lsp-ui-doc-delay 0.5
@@ -77,13 +77,13 @@
   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 ;; Company completion
-(when (maybe-require-package 'company)
+(when (straight-use-package 'company)
   (add-hook 'python-mode-hook 'company-mode)
   (setq company-minimum-prefix-length 1
         company-idle-delay 0.2))
 
 ;; Flycheck for syntax checking
-(when (maybe-require-package 'flycheck)
+(when (straight-use-package 'flycheck)
   (add-hook 'python-mode-hook 'flycheck-mode)
   ;; LSP provides diagnostics, but we can also enable flycheck checkers as backup
   (with-eval-after-load 'flycheck
@@ -108,7 +108,7 @@
 (add-hook 'python-mode-hook 'highlight-indentation-current-column-mode)
 
 ;; Formatting with autopep8 (optional - LSP can handle this too)
-(when (maybe-require-package 'py-autopep8)
+(when (straight-use-package 'py-autopep8)
   ;; Uncomment to enable auto-formatting on save
   ;; (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
   )
@@ -124,7 +124,7 @@
             (local-set-key (kbd "C-c C-r") 'lsp-rename)))
 
 ;; Optional: Use dap-mode for debugging
-(when (maybe-require-package 'dap-mode)
+(when (straight-use-package 'dap-mode)
   (require 'dap-python)
   (add-hook 'python-mode-hook 'dap-ui-mode)
   (add-hook 'python-mode-hook 'dap-mode))

@@ -33,7 +33,7 @@
 
 (require 'cl-lib)
 
-(defun require-package (package &optional min-version no-refresh)
+(defun straight-use-package (package &optional min-version no-refresh)
   "Install given PACKAGE, optionally requiring MIN-VERSION.
 If NO-REFRESH is non-nil, the available package lists will not be
 re-downloaded in order to locate PACKAGE."
@@ -45,16 +45,16 @@ re-downloaded in order to locate PACKAGE."
           (if no-refresh
               (error "No version of %s >= %S is available" package min-version)
             (package-refresh-contents)
-            (require-package package min-version t))))))
+            (straight-use-package package min-version t))))))
 
-(defun maybe-require-package (package &optional min-version no-refresh)
+(defun straight-use-package (package &optional min-version no-refresh)
   "Try to install PACKAGE, and return non-nil if successful.
 In the event of failure, return nil and print a warning message.
 Optionally require MIN-VERSION.  If NO-REFRESH is non-nil, the
 available package lists will not be re-downloaded in order to
 locate PACKAGE."
   (condition-case err
-      (require-package package min-version no-refresh)
+      (straight-use-package package min-version no-refresh)
     (error
      (message "Couldn't install optional package `%s': %S" package err)
      nil)))
@@ -79,21 +79,21 @@ locate PACKAGE."
       (when (and available (boundp 'package-selected-packages))
         (add-to-list 'sanityinc/required-packages package)))))
 
-(advice-add 'require-package :around 'sanityinc/note-selected-package)
+(advice-add 'straight-use-package :around 'sanityinc/note-selected-package)
 
 (when (fboundp 'package--save-selected-packages)
-  (require-package 'seq)
+  (straight-use-package 'seq)
   (add-hook 'after-init-hook
             (lambda () (package--save-selected-packages
                    (seq-uniq (append sanityinc/required-packages package-selected-packages))))))
 
 
-(require-package 'fullframe)
+(straight-use-package 'fullframe)
 (fullframe list-packages quit-window)
 
 
 (let ((package-check-signature nil))
-  (require-package 'gnu-elpa-keyring-update))
+  (straight-use-package 'gnu-elpa-keyring-update))
 
 
 (defun sanityinc/set-tabulated-list-column-width (col-name width)

@@ -4,7 +4,7 @@
 
 (require 'subr-x)  ; For when-let (built-in since Emacs 26)
 
-(when (maybe-require-package 'flycheck)
+(when (straight-use-package 'flycheck)
   ;; (add-hook 'after-init-hook 'global-flycheck-mode)
   ;; this hook only turns on flycheck in local programming mode files
   (add-hook 'prog-mode-hook
@@ -14,7 +14,7 @@
                 (flycheck-mode))))
   (setq flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list)
 
-  (when (maybe-require-package 'flycheck-color-mode-line)
+  (when (straight-use-package 'flycheck-color-mode-line)
     (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
 
 (defun kyle/insert-line-with-text-above (text)

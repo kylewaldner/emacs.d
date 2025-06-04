@@ -13,15 +13,15 @@
   (dolist (key (list (kbd "C-c C-r") (kbd "r")))
     (define-key this-mode-map key 'revert-buffer)))
 
-(require-package 'wgrep)
+(straight-use-package 'wgrep)
 (after-load 'grep
   (dolist (key (list (kbd "C-c C-q") (kbd "w")))
     (define-key grep-mode-map key 'wgrep-change-to-wgrep-mode))
   (search-refresh-key grep-mode-map))
 
 (when (and (executable-find "ag")
-           (maybe-require-package 'ag))
-  (maybe-require-package 'wgrep-ag)
+           (straight-use-package 'ag))
+  (straight-use-package 'wgrep-ag)
   (setq ag-arguments (list "--stats" "--smart-case" "-W" "100"))
   ;; C-C C-p to change to wgrep mode
   (setq-default ag-highlight-search t)
@@ -30,8 +30,8 @@
   (global-set-key (kbd "C-c i") 'projectile-ag)) ;; global search in project
 
 (when (and (executable-find "rg")
-           (maybe-require-package 'rg))
-  (maybe-require-package 'deadgrep)
+           (straight-use-package 'rg))
+  (straight-use-package 'deadgrep)
   (global-set-key (kbd "M-?") 'rg-project))
 
 ;; grep-find-ignored-directories needs to be modified for rgrep to e useful

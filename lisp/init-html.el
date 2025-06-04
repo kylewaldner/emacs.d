@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-;; (require-package 'tagedit)
+;; (straight-use-package 'tagedit)
 ;; (after-load 'sgml-mode
 ;;   (tagedit-add-paredit-like-keybindings)
 ;;   (define-key tagedit-mode-map (kbd "M-?") nil)
