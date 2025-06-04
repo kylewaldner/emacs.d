@@ -58,3 +58,7 @@ projectile.cache
 /eln-cache
 company-statistics-cache.el
 /undo-tree
+
+# Python virtual environment (created by install.sh)
+/python-venv/
+/python-venv-info.txt
