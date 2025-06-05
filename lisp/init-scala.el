@@ -13,6 +13,10 @@
 
   ;; Set up the tree-sitter grammar if needed
   (when (straight-use-package 'scala-ts-mode)
+    ;; Initialize treesit-language-source-alist if it doesn't exist
+    (unless (boundp 'treesit-language-source-alist)
+      (setq treesit-language-source-alist nil))
+
     (add-to-list 'treesit-language-source-alist
                  '(scala "https://github.com/tree-sitter/tree-sitter-scala"))
 

@@ -15,6 +15,10 @@
 ;; Use tree-sitter modes for Emacs 29+ (modern syntax highlighting and parsing)
 (when (and (fboundp 'treesit-available-p) (treesit-available-p))
   ;; Install tree-sitter grammars
+  ;; Initialize treesit-language-source-alist if it doesn't exist
+  (unless (boundp 'treesit-language-source-alist)
+    (setq treesit-language-source-alist nil))
+
   (setq treesit-language-source-alist
         (append treesit-language-source-alist
                 '((javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
