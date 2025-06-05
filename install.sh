@@ -88,6 +88,10 @@ list_installers() {
         installers+=("javascript" "JavaScript/TypeScript Dependencies (LSP, Prettier, ESLint, etc.)")
     fi
 
+    if [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
+        installers+=("emacs-server" "Emacs Server Setup (systemd service and shell aliases)")
+    fi
+
     # Add more installers here as they are created
     # Example:
     # if [[ -f "$INSTALLATION_DIR/install_node_deps.sh" ]]; then
@@ -126,6 +130,15 @@ run_installer() {
                 bash "$INSTALLATION_DIR/install_javascript_deps.sh"
             else
                 print_error "JavaScript installer not found!"
+                return 1
+            fi
+            ;;
+        "emacs-server")
+            if [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
+                print_status "Running Emacs server setup installer..."
+                bash "$INSTALLATION_DIR/install_emacs_server.sh"
+            else
+                print_error "Emacs server installer not found!"
                 return 1
             fi
             ;;
@@ -170,6 +183,18 @@ run_installer() {
                 echo
             fi
 
+            if [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
+                ((total_count++))
+                print_header "Setting up Emacs Server..."
+                if bash "$INSTALLATION_DIR/install_emacs_server.sh"; then
+                    ((success_count++))
+                    print_success "Emacs server setup completed successfully"
+                else
+                    print_error "Emacs server setup failed"
+                fi
+                echo
+            fi
+
             # Add more installers here
 
             print_status "Installation summary: $success_count/$total_count installers completed successfully"
@@ -194,7 +219,7 @@ show_menu() {
 
     # Check if any installers exist
     local has_installers=false
-    if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_javascript_deps.sh" ]]; then
+    if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_javascript_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
         has_installers=true
     fi
 
@@ -223,6 +248,10 @@ get_user_choice() {
         options+=("Install JavaScript/TypeScript Dependencies")
     fi
 
+    if [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
+        options+=("Install Emacs Server Setup")
+    fi
+
     options+=("Install All Dependencies" "Quit")
 
     select choice in "${options[@]}"; do
@@ -237,6 +266,10 @@ get_user_choice() {
                 ;;
             "Install JavaScript/TypeScript Dependencies")
                 echo "javascript"
+                return 0
+                ;;
+            "Install Emacs Server Setup")
+                echo "emacs-server"
                 return 0
                 ;;
             "Install All Dependencies")
@@ -264,6 +297,7 @@ show_usage() {
     echo "  python         Install Python dependencies"
     echo "  scala          Install Scala dependencies"
     echo "  javascript     Install JavaScript/TypeScript dependencies"
+    echo "  emacs-server   Install Emacs server setup (systemd service and aliases)"
     echo "  all            Install all dependencies"
     echo
     echo "If no option is provided, interactive menu will be shown."
@@ -297,7 +331,7 @@ main() {
             done
             exit 0
             ;;
-        "python"|"scala"|"javascript"|"all")
+        "python"|"scala"|"javascript"|"emacs-server"|"all")
             check_installation_dir
             run_installer "$arg"
             exit $?
