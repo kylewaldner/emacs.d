@@ -151,10 +151,5 @@ Handles different comment styles based on major mode."
       (narrow-to-region start end)
       (decomment))))
 
-;; Optional: Add keybindings
-(global-set-key (kbd "C-c e d") 'demoji)
-(global-set-key (kbd "C-c c d") 'decomment)
-(global-set-key (kbd "C-c t c") 'clean-chat-text)
-
 (provide 'init-chat)
 ;;; init-chat.el ends here
