@@ -65,3 +65,9 @@ company-statistics-cache.el
 
 # straight.el package manager
 /straight/
+
+# Tree sitter stuff
+tree-sitter/
+
+# I dont need to sync my history with the whole world
+places
