@@ -1,0 +1,14 @@
+[Unit]
+Description=Emacs text editor
+Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
+
+[Service]
+Type=forking
+ExecStart=/home/kyle/emacs/server_emacs/bin/emacs --daemon
+ExecStop=/home/kyle/emacs/server_emacs/bin/emacsclient --eval "(kill-emacs)"
+Environment=SSH_AUTH_SOCK=%i
+Restart=on-failure
+TimeoutStartSec=0
+
+[Install]
+WantedBy=default.target

@@ -163,11 +163,12 @@
 ;;----------------------------------------------------------------------------
 ;; Allow access from emacsclient
 ;;----------------------------------------------------------------------------
-(add-hook 'after-init-hook
-          (lambda ()
-            (require 'server)
-            (unless (server-running-p)
-              (server-start))))
+;; Commented out automatic server startup - daemon will be started externally
+;; (add-hook 'after-init-hook
+;;           (lambda ()
+;;             (require 'server)
+;;             (unless (server-running-p)
+;;               (server-start))))
 
 ;;----------------------------------------------------------------------------
 ;; Variables configured via the interactive 'customize' interface
