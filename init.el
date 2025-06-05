@@ -7,7 +7,7 @@
 ;;; Code:
 
 ;; Produce backtraces when errors occur: can be helpful to diagnose startup issues
-;;(setq debug-on-error t)
+;; (setq debug-on-error t)
 
 (let ((minver "24.4"))
   (when (version< emacs-version minver)
@@ -150,6 +150,7 @@
 
 ;; Byte compilation utilities
 (require 'init-compilation)
+(require 'analyze-dependencies)
 
 ;; causes errors
 ;; (when (straight-use-package 'uptimes)

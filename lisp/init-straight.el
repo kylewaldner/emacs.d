@@ -41,6 +41,13 @@
       use-package-expand-minimally t
       use-package-enable-imenu-support t)
 
+;; Additional performance optimizations for straight.el
+(setq straight-use-package-by-default t
+      straight-cache-autoloads t
+      straight-check-for-modifications '(check-on-save find-when-checking)
+      straight-disable-compile nil
+      straight-vc-git-default-clone-depth 1)
+
 ;; Load fullframe for package list compatibility
 (use-package fullframe
   :config
