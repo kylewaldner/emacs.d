@@ -2,9 +2,11 @@
 ;;; Commentary:
 ;;; Code:
 
+(setq gofmt-command "goimports")
+
 (straight-use-package 'go-mode)
 
-(setq gofmt-command "goimports")
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 
 
 (add-hook 'purescript-mode-hook
