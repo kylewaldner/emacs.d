@@ -41,7 +41,7 @@
 
 ;; Configure straight.el for optimal performance
 (setq straight-use-package-by-default t
-      straight-check-for-modifications '(check-on-save find-when-checking)
+      straight-check-for-modifications nil
       straight-cache-autoloads t
       straight-vc-git-default-clone-depth 1)
 
