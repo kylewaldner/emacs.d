@@ -34,13 +34,13 @@
 ;; LSP-mode configuration
 (when (straight-use-package 'lsp-mode)
   (setq lsp-keymap-prefix "C-c l")
-  
+
   ;; Performance optimizations
   (setq lsp-idle-delay 0.5
         lsp-log-io nil
         lsp-completion-provider :company-capf
         lsp-headerline-breadcrumb-enable nil)
-  
+
   ;; Python LSP configuration
   (setq lsp-pylsp-plugins-pylint-enabled nil        ; Use flake8 instead
         lsp-pylsp-plugins-flake8-enabled t
@@ -54,7 +54,7 @@
         lsp-pylsp-plugins-jedi-references-enabled t
         lsp-pylsp-plugins-jedi-signature-help-enabled t
         lsp-pylsp-plugins-jedi-symbols-enabled t)
-  
+
   ;; Hook LSP to Python mode
   (add-hook 'python-mode-hook
             (lambda ()
@@ -73,7 +73,7 @@
         lsp-ui-sideline-update-mode 'line     ; Update sideline when cursor moves
         lsp-ui-sideline-delay 0.2             ; Delay before showing sideline
         lsp-ui-peek-enable t)
-  
+
   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 ;; Company completion
@@ -130,4 +130,4 @@
   (add-hook 'python-mode-hook 'dap-mode))
 
 (provide 'init-python-lsp)
-;;; init-python-lsp.el ends here 
+;;; init-python-lsp.el ends here

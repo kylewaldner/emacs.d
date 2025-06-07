@@ -130,9 +130,12 @@
 ;; (require 'init-c)
 ;;(require 'init-cpp)
 (require 'init-scala)
+(require 'init-golang)
 (require 'init-verilog)
 (require 'init-kyle-custom)
 (require 'init-chat)
+(require 'init-proto)
+(require 'init-graphql)
 
 ;;(require 'init-twitter)
 ;; (require 'init-mu)
