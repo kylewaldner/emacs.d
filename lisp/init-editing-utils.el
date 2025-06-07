@@ -72,6 +72,16 @@
 (when (straight-use-package 'beacon)
   (setq-default beacon-lighter "")
   (setq-default beacon-size 20)
+  ;; Don't flash when company popup is active or other problematic situations
+  (setq beacon-dont-blink-predicates
+        '((lambda () (bound-and-true-p company-backend))
+          (lambda () (and (boundp 'company-candidates) company-candidates))))
+  ;; Make beacon less intrusive - only blink on window/buffer changes
+  (setq beacon-blink-when-point-moves-horizontally nil)
+  (setq beacon-blink-when-point-moves-vertically nil)
+  (setq beacon-blink-when-buffer-changes t)
+  (setq beacon-blink-when-window-scrolls nil)
+  (setq beacon-blink-when-window-changes t)
   (add-hook 'after-init-hook 'beacon-mode))
 
 
