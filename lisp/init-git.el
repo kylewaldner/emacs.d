@@ -35,6 +35,8 @@
           (magit-log-buffer-file t))
       (vc-print-log)))
 
+  (straight-use-package '(magit-tagger :type git :host github :repo "kylewaldner/magit-tagger"))
+
   (after-load 'vc
     (define-key vc-prefix-map (kbd "l") 'sanityinc/magit-or-vc-log-file)))
 
