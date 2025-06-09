@@ -4,11 +4,20 @@
 
 export EMACS_SERVER_PATH="$HOME/emacs/server_emacs/bin"
 
+
+function emacsclient() {
+    if [[ "$#" -lt 1 ]]; then
+        $EMACS_SERVER_PATH/emacsclient -c -n -e \
+                                       "(select-frame-set-input-focus (selected-frame))"
+    else
+        $EMACS_SERVER_PATH/emacsclient -c -n -e \
+                                       "(select-frame-set-input-focus (selected-frame))" \
+                                       "(find-file \"$1\")"
+    fi
+}
+
 # Set emacsclient as the default editor
 export EDITOR="$EMACS_SERVER_PATH/emacsclient -c"
 export ALTERNATE_EDITOR="nano"
 
-alias emacsclient="$EMACS_SERVER_PATH/emacsclient -c"
-alias em="$EMACS_SERVER_PATH/emacsclient -n -c"  # emacsclient no-wait (background)
-alias emm="emacsclient"
-alias emt="$EMACS_SERVER_PATH/emacsclient -t"     # emacsclient in terminal
+alias em="emacsclient"

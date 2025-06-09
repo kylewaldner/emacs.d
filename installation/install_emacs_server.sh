@@ -108,7 +108,7 @@ get_emacs_path() {
     local current_emacs_server_path
 
     # Check if emacsclientrc.sh exists and extract current EMACS_SERVER_PATH
-    local emacsclientrc_file="$HOME/.emacsclientrc"
+    local emacsclientrc_file="$HOME/.emacsclient_bash_aliases"
     if [[ -f "$emacsclientrc_file" ]]; then
         current_emacs_server_path=$(grep "^export EMACS_SERVER_PATH=" "$emacsclientrc_file" 2>/dev/null | cut -d'"' -f2)
         if [[ -n "$current_emacs_server_path" ]]; then
@@ -296,7 +296,7 @@ install_shell_aliases() {
     local shell_type
     local rc_file
     local emacs_path="$1"
-    local emacsclientrc_file="$HOME/.emacsclientrc"
+    local emacsclientrc_file="$HOME/.emacsclient_bash_aliases"
     local template_file="$EMACS_SERVER_CONFIG_DIR/emacsclientrc.sh"
     local default_path="$HOME/emacs/server_emacs"
 
