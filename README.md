@@ -35,16 +35,18 @@ git clone git@git.sv.gnu.org:emacs.git
 Then run
 
 ```
+# tree sitter is required for full tree sitter support
+# the rest are optional improvements
 ./configure \
-  --with-tree-sitter \        # required for full tree sitter support
-  --with-native-compilation \ # optional improvement
-  --with-json \               # optional improvement
-  --with-modules \            # optional improvement
-  --with-x-toolkit=gtk3 \     # optional improvement
-  --with-cairo \              # optional improvement
-  --with-rsvg \               # optional improvement
-  --with-webp \               # optional improvement
-  --with-imagemagick          # optional improvement
+  --with-tree-sitter \
+  --with-native-compilation \
+  --with-json \
+  --with-modules \
+  --with-x-toolkit=gtk3 \
+  --with-cairo \
+  --with-rsvg \
+  --with-webp \
+  --with-imagemagick
 make -j$(nproc)
 sudo make install
 ```
@@ -56,11 +58,15 @@ on some flavors of linux, you need to use a different x toolkit for emacs server
 I build it with this:
 
 ```
+# you should install it into a different dir if you want to use gtk3 for non server emacs
+# the x toolkit lucid option is needed for emacs server to work
+# tree sitter is needed for tree sitter support
+# the rest of these are optional improvements
 mkdir -p $HOME/emacs/server_emacs
-./configure --prefix=$HOME/emacs/server_emacs \ # installs it into a different directory
-  --with-x-toolkit=lucid \                      # important to make emacsserver work
-  --with-tree-sitter \                          # needed for tree sitter
-  --with-native-compilation \                   # the rest of these are optional improvements
+./configure --prefix=$HOME/emacs/server_emacs \
+  --with-x-toolkit=lucid \
+  --with-tree-sitter \
+  --with-native-compilation \
   --with-json \
   --with-modules \
   --with-cairo \
@@ -68,7 +74,7 @@ mkdir -p $HOME/emacs/server_emacs
   --with-webp \
   --with-imagemagick
 make -j$(nproc)
-sudo make install
+make install
 ```
 
 ## Installation
