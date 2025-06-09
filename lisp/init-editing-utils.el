@@ -108,7 +108,8 @@
 
 (when (fboundp 'display-line-numbers-mode)
   (setq-default display-line-numbers-width 3)
-  (add-hook 'prog-mode-hook 'display-line-numbers-mode))
+  (dolist (hook '(prog-mode-hook conf-mode-hook))
+    (add-hook hook 'display-line-numbers-mode)))
 
 (when (straight-use-package 'goto-line-preview)
   (global-set-key [remap goto-line] 'goto-line-preview)
