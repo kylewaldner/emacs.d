@@ -29,9 +29,9 @@
   (define-key dired-mode-map [mouse-2] 'dired-find-file)
   (define-key dired-mode-map (kbd "C-c C-q") 'wdired-change-to-wdired-mode))
 
-(when (straight-use-package 'diff-hl)
-  (after-load 'dired
-    (add-hook 'dired-mode-hook 'diff-hl-dired-mode)))
+;; Enable diff-hl in dired mode (diff-hl is installed in init-vc.el)
+(after-load 'dired
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 
 (provide 'init-dired)
 ;;; init-dired.el ends here
