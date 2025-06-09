@@ -90,17 +90,10 @@
 
 ;;; Language Server Protocol (LSP) Setup
 
-(when (straight-use-package 'lsp-mode)
-  ;; Performance optimizations
-  (setq lsp-keymap-prefix "C-c l"
-        lsp-idle-delay 0.5
-        lsp-completion-provider :company-capf
-        lsp-headerline-breadcrumb-enable t
-        lsp-enable-file-watchers nil  ; Disabled for performance
-        lsp-file-watch-threshold 5000
-        lsp-log-io nil
-        lsp-enable-text-document-color nil)
+;; Load unified LSP configuration
+(require 'init-lsp-unified)
 
+(when (featurep 'lsp-mode)
   ;; JavaScript/TypeScript LSP servers
   ;; Priority: typescript-language-server > vscode-langservers-extracted
   (when (executable-find "typescript-language-server")
@@ -170,6 +163,9 @@
   (with-eval-after-load 'flycheck
     (setq-default flycheck-disabled-checkers
                   '(javascript-jshint javascript-jscs))))
+
+;;; Note: LSP UI, Company completion, and Flycheck are now configured
+;; in init-lsp-unified.el for consistency across all languages.
 
 ;;; Code Formatting
 

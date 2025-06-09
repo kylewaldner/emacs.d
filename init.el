@@ -98,6 +98,8 @@
 (require 'init-css)
 (require 'init-haml)
 (require 'init-http)
+;; Unified LSP configuration for all languages
+(require 'init-lsp-unified)
 ;; Modern Python setup with LSP (replaces anaconda-mode for Python 3.13 support)
 (require 'init-python-lsp)
 ;; Old Python setup (kept as backup): (require 'init-python)
