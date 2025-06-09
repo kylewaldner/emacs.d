@@ -18,7 +18,7 @@
       (setq treesit-language-source-alist nil))
 
     (add-to-list 'treesit-language-source-alist
-                 '(scala "https://github.com/tree-sitter/tree-sitter-scala"))
+                 '(scala "https://github.com/tree-sitter/tree-sitter-scala" "master" "src"))
 
     ;; Auto-install grammar if not available
     (unless (treesit-language-available-p 'scala)
@@ -228,6 +228,16 @@
           (message "Scala tree-sitter grammar is already installed and available")
         (progn
           (message "Installing Scala tree-sitter grammar...")
+          ;; Ensure the language source is properly configured
+          (unless (boundp 'treesit-language-source-alist)
+            (setq treesit-language-source-alist nil))
+
+          ;; Remove any existing entry and add the correct one
+          (setq treesit-language-source-alist
+                (assq-delete-all 'scala treesit-language-source-alist))
+          (add-to-list 'treesit-language-source-alist
+                       '(scala "https://github.com/tree-sitter/tree-sitter-scala" "master" "src"))
+
           (condition-case err
               (progn
                 (treesit-install-language-grammar 'scala)
@@ -236,6 +246,34 @@
                     (message "✓ Scala tree-sitter grammar installed successfully!")
                   (message "⚠ Grammar installation completed but language not available")))
             (error (message "✗ Failed to install Scala tree-sitter grammar: %s" err)))))
+    (message "Tree-sitter is not available in this Emacs build")))
+
+;; Helper function to force reinstall tree-sitter grammar
+(defun reinstall-scala-treesitter-grammar ()
+  "Force reinstall the Scala tree-sitter grammar, even if already installed."
+  (interactive)
+  (if (and (fboundp 'treesit-available-p) (treesit-available-p))
+      (progn
+        (message "Force reinstalling Scala tree-sitter grammar...")
+        ;; Ensure the language source is properly configured
+        (unless (boundp 'treesit-language-source-alist)
+          (setq treesit-language-source-alist nil))
+
+        ;; Remove any existing entry and add the correct one
+        (setq treesit-language-source-alist
+              (assq-delete-all 'scala treesit-language-source-alist))
+        (add-to-list 'treesit-language-source-alist
+                     '(scala "https://github.com/tree-sitter/tree-sitter-scala" "master" "src"))
+
+        (condition-case err
+            (progn
+              ;; Force installation regardless of current status
+              (treesit-install-language-grammar 'scala t) ; The 't' forces reinstallation
+              (if (and (fboundp 'treesit-language-available-p)
+                       (treesit-language-available-p 'scala))
+                  (message "✓ Scala tree-sitter grammar reinstalled successfully!")
+                (message "⚠ Grammar reinstallation completed but language not available")))
+          (error (message "✗ Failed to reinstall Scala tree-sitter grammar: %s" err))))
     (message "Tree-sitter is not available in this Emacs build")))
 
 ;; Helper function to check tree-sitter grammar status
