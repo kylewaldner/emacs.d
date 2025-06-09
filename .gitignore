@@ -71,3 +71,6 @@ tree-sitter/
 
 # I dont need to sync my history with the whole world
 places
+
+# LSP session data
+.lsp-session-v1
