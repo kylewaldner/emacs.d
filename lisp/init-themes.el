@@ -52,7 +52,7 @@
      ;; Fringe (left/right sidebars)
      '(fringe ((t (:background "#2b3440"))))
      ;; Magit diff hunk headers (@@...@@) - change from purple to grey
-     '(magit-diff-hunk-heading-highlight ((t (:foreground "#8fa5b8" :background "#2b3440")))))))
+     '(magit-diff-hunk-heading-highlight ((t (:foreground "#8fa5b8" :background "#222932")))))))
 
 ;; Apply comment customization after theme loads
 (add-hook 'after-init-hook 'kyle/customize-oceanic-comments)
