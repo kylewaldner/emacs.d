@@ -88,6 +88,10 @@ list_installers() {
         installers+=("javascript" "JavaScript/TypeScript Dependencies (LSP, Prettier, ESLint, etc.)")
     fi
 
+    if [[ -f "$INSTALLATION_DIR/install_go_deps.sh" ]]; then
+        installers+=("go" "Go Dependencies (gopls, delve, goimports, golangci-lint, etc.)")
+    fi
+
     if [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
         installers+=("emacs-server" "Emacs Server Setup (systemd service and shell aliases)")
     fi
@@ -130,6 +134,15 @@ run_installer() {
                 bash "$INSTALLATION_DIR/install_javascript_deps.sh"
             else
                 print_error "JavaScript installer not found!"
+                return 1
+            fi
+            ;;
+        "go")
+            if [[ -f "$INSTALLATION_DIR/install_go_deps.sh" ]]; then
+                print_status "Running Go dependencies installer..."
+                bash "$INSTALLATION_DIR/install_go_deps.sh"
+            else
+                print_error "Go installer not found!"
                 return 1
             fi
             ;;
@@ -183,6 +196,18 @@ run_installer() {
                 echo
             fi
 
+            if [[ -f "$INSTALLATION_DIR/install_go_deps.sh" ]]; then
+                ((total_count++))
+                print_header "Installing Go Dependencies..."
+                if bash "$INSTALLATION_DIR/install_go_deps.sh"; then
+                    ((success_count++))
+                    print_success "Go dependencies installed successfully"
+                else
+                    print_error "Go dependencies installation failed"
+                fi
+                echo
+            fi
+
             if [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
                 ((total_count++))
                 print_header "Setting up Emacs Server..."
@@ -219,7 +244,7 @@ show_menu() {
 
     # Check if any installers exist
     local has_installers=false
-    if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_javascript_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
+    if [[ -f "$INSTALLATION_DIR/install_python_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_scala_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_javascript_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_go_deps.sh" ]] || [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
         has_installers=true
     fi
 
@@ -248,6 +273,10 @@ get_user_choice() {
         options+=("Install JavaScript/TypeScript Dependencies")
     fi
 
+    if [[ -f "$INSTALLATION_DIR/install_go_deps.sh" ]]; then
+        options+=("Install Go Dependencies")
+    fi
+
     if [[ -f "$INSTALLATION_DIR/install_emacs_server.sh" ]]; then
         options+=("Install Emacs Server Setup")
     fi
@@ -266,6 +295,10 @@ get_user_choice() {
                 ;;
             "Install JavaScript/TypeScript Dependencies")
                 echo "javascript"
+                return 0
+                ;;
+            "Install Go Dependencies")
+                echo "go"
                 return 0
                 ;;
             "Install Emacs Server Setup")
@@ -297,6 +330,7 @@ show_usage() {
     echo "  python         Install Python dependencies"
     echo "  scala          Install Scala dependencies"
     echo "  javascript     Install JavaScript/TypeScript dependencies"
+    echo "  go             Install Go dependencies"
     echo "  emacs-server   Install Emacs server setup (systemd service and aliases)"
     echo "  all            Install all dependencies"
     echo
@@ -331,7 +365,7 @@ main() {
             done
             exit 0
             ;;
-        "python"|"scala"|"javascript"|"emacs-server"|"all")
+        "python"|"scala"|"javascript"|"go"|"emacs-server"|"all")
             check_installation_dir
             run_installer "$arg"
             exit $?
