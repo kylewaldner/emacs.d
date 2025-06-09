@@ -69,8 +69,11 @@ company-statistics-cache.el
 # Tree sitter stuff
 tree-sitter/
 
-# I dont need to sync my history with the whole world
+# hide sync history
 places
 
 # LSP session data
 .lsp-session-v1
+
+# dap stuff
+.dap-breakpoints
