@@ -45,6 +45,25 @@ closes project buffers, and then re-adds and switches to it."
       (projectile-switch-project-by-name project-root)
       (message "Project %s has been reset!" project-root))))
 
+(defun kyle/projectile-switch-project-with-magit (&optional arg)
+  "Switch to a project and immediately open magit status for that project.
+Invokes the same behavior as `projectile-switch-project' but also opens magit.
+With a prefix ARG invokes `projectile-commander' instead."
+  (interactive "P")
+  (let ((projects (projectile-relevant-known-projects)))
+    (if projects
+        (projectile-completing-read
+         "Switch to project: " projects
+         :action #'(lambda (project)
+                     ;; Temporarily override the switch project action to do nothing
+                     (let ((projectile-switch-project-action (lambda ())))
+                       (projectile-switch-project-by-name project arg))
+                     ;; Now manually open magit if it's a git repo
+                     (when (and (fboundp 'magit-status)
+                                (file-directory-p (expand-file-name ".git" project)))
+                       (magit-status project))))
+      (user-error "There are no known projects"))))
+
 ;; Bind it to a key
 (with-eval-after-load 'projectile
   (define-key projectile-command-map (kbd "F") 'kyle/projectile-fresh-start))
@@ -55,7 +74,10 @@ closes project buffers, and then re-adds and switches to it."
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
   ;; Add the reload function binding
-  (define-key projectile-command-map (kbd "R") 'kyle/projectile-reload-current-project))
+  (define-key projectile-command-map (kbd "R") 'kyle/projectile-reload-current-project)
+
+  ;; Override C-c p p to use our custom function
+  (define-key projectile-command-map (kbd "p") 'kyle/projectile-switch-project-with-magit))
 
 ;; Enable projectile mode after configuration
 (projectile-mode 1)
