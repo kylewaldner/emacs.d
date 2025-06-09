@@ -27,19 +27,28 @@
           (treesit-install-language-grammar 'scala)
         (error (message "Failed to auto-install Scala tree-sitter grammar: %s" err))))
 
-    ;; Only remap if grammar is available
-    (when (treesit-language-available-p 'scala)
-      ;; Remap scala-mode to scala-ts-mode for better performance
-      (add-to-list 'major-mode-remap-alist '(scala-mode . scala-ts-mode))
+    ;; Always set up auto-mode-alist, even if grammar install failed
+    ;; The mode will fall back gracefully if grammar is missing
+    (message "Setting up scala-ts-mode as default for .scala files...")
+    
+    ;; Remove any existing entries and add tree-sitter mode first
+    (setq auto-mode-alist
+          (cons '("\\.scala\\'" . scala-ts-mode)
+                (assq-delete-all "\\.scala\\'" auto-mode-alist)))
+    (setq auto-mode-alist
+          (cons '("\\.sc\\'" . scala-ts-mode)
+                (assq-delete-all "\\.sc\\'" auto-mode-alist)))
+    
+    ;; Set up major mode remap
+    (add-to-list 'major-mode-remap-alist '(scala-mode . scala-ts-mode))
+    
+    (message "✓ Scala tree-sitter mode configured as default")))
 
-      ;; Set up auto-mode-alist for Scala files
-      (add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-ts-mode))
-      (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-ts-mode)))))
-
-;; Fallback to regular scala-mode for older Emacs versions
+;; Fallback to regular scala-mode for older Emacs versions or missing grammar
 (unless (and (fboundp 'treesit-available-p) (treesit-available-p))
   (add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-mode))
-  (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-mode)))
+  (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-mode))
+  (message "Using regular scala-mode (tree-sitter not available)"))
 
 ;; SBT integration with modern settings
 (when (straight-use-package 'sbt-mode)
@@ -68,12 +77,27 @@
   ;; Scala-specific LSP settings
   (setq lsp-metals-server-args '("-J-Dmetals.allow-multiline-string-formatting=off"))
 
-  ;; Hook into Scala modes
-  (add-hook 'scala-mode-hook 'lsp-deferred)
-  (when (featurep 'scala-ts-mode)
-    (add-hook 'scala-ts-mode-hook 'lsp-deferred))
+  ;; Explicitly register Metals as the LSP server for Scala
+  (with-eval-after-load 'lsp-mode
+    ;; Ensure Metals is registered for scala files
+    (add-to-list 'lsp-language-id-configuration '(scala-mode . "scala"))
+    (add-to-list 'lsp-language-id-configuration '(scala-ts-mode . "scala"))
+    
+    ;; Force Metals to be the primary server for Scala
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection '("metals"))
+                      :major-modes '(scala-mode scala-ts-mode)
+                      :priority 10  ; High priority to override any other servers
+                      :notification-handlers (ht ("metals/executeClientCommand" 'lsp-metals--execute-client-command)
+                                                  ("metals/publishDecorations" 'lsp-metals--publish-decorations)
+                                                  ("metals/treeViewDidChange" 'lsp-metals-treeview--did-change)
+                                                  ("metals/quickPick" 'lsp-metals--quick-pick))
+                      :action-handlers (ht ("metals-goto-location" 'lsp-metals--goto-location)
+                                          ("metals-echo-command" 'lsp-metals--echo-command))
+                      :server-id 'metals
+                      :initialization-options (lambda () lsp-metals--server-init-options))))
 
-  ;; Enable helpful features
+  ;; Enable helpful features (LSP mode hooks are set up with unified function below)
   (add-hook 'lsp-mode-hook 'lsp-lens-mode)
   (add-hook 'lsp-mode-hook 'lsp-enable-which-key-integration))
 
@@ -110,8 +134,7 @@
 ;; Alternative: Company mode for completion
 (when (and (straight-use-package 'company) (not (featurep 'corfu)))
   (add-hook 'scala-mode-hook 'company-mode)
-  (when (featurep 'scala-ts-mode)
-    (add-hook 'scala-ts-mode-hook 'company-mode)))
+  (add-hook 'scala-ts-mode-hook 'company-mode))
 
 ;; Debug Adapter Protocol support
 (when (straight-use-package 'dap-mode)
@@ -138,15 +161,13 @@
                    '(scalafmt "scalafmt" "--stdin"))
       (add-to-list 'apheleia-mode-alist
                    '(scala-mode . scalafmt))
-      (when (featurep 'scala-ts-mode)
-        (add-to-list 'apheleia-mode-alist
-                     '(scala-ts-mode . scalafmt))))))
+      (add-to-list 'apheleia-mode-alist
+                   '(scala-ts-mode . scalafmt)))))
 
 ;; Enhanced error checking
 (when (straight-use-package 'flycheck)
   (add-hook 'scala-mode-hook 'flycheck-mode)
-  (when (featurep 'scala-ts-mode)
-    (add-hook 'scala-ts-mode-hook 'flycheck-mode)))
+  (add-hook 'scala-ts-mode-hook 'flycheck-mode))
 
 ;; Project management integration
 (when (straight-use-package 'projectile)
@@ -161,8 +182,7 @@
 ;; Snippet support
 (when (straight-use-package 'yasnippet)
   (add-hook 'scala-mode-hook 'yas-minor-mode)
-  (when (featurep 'scala-ts-mode)
-    (add-hook 'scala-ts-mode-hook 'yas-minor-mode)))
+  (add-hook 'scala-ts-mode-hook 'yas-minor-mode))
 
 ;; Which-key integration for LSP commands
 (when (straight-use-package 'which-key)
@@ -178,18 +198,17 @@
                 "C-c l a" "actions"
                 "C-c l w" "workspace")))
 
-  (when (featurep 'scala-ts-mode)
-    (add-hook 'scala-ts-mode-hook
-              (lambda ()
-                (which-key-add-major-mode-key-based-replacements 'scala-ts-mode
-                  "C-c l" "lsp"
-                  "C-c l g" "goto"
-                  "C-c l h" "help"
-                  "C-c l r" "refactor"
-                  "C-c l F" "folders"
-                  "C-c l T" "toggle"
-                  "C-c l a" "actions"
-                  "C-c l w" "workspace")))))
+  (add-hook 'scala-ts-mode-hook
+            (lambda ()
+              (which-key-add-major-mode-key-based-replacements 'scala-ts-mode
+                "C-c l" "lsp"
+                "C-c l g" "goto"
+                "C-c l h" "help"
+                "C-c l r" "refactor"
+                "C-c l F" "folders"
+                "C-c l T" "toggle"
+                "C-c l a" "actions"
+                "C-c l w" "workspace"))))
 
 ;; Useful keybindings for Scala development
 (defun scala-mode-setup-keybindings ()
@@ -204,8 +223,7 @@
     (local-set-key (kbd "C-c f") 'lsp-format-buffer)))
 
 (add-hook 'scala-mode-hook 'scala-mode-setup-keybindings)
-(when (featurep 'scala-ts-mode)
-  (add-hook 'scala-ts-mode-hook 'scala-mode-setup-keybindings))
+(add-hook 'scala-ts-mode-hook 'scala-mode-setup-keybindings)
 
 ;; Performance tip for large Scala projects
 (defun scala-performance-settings ()
@@ -215,8 +233,7 @@
   (setq-local lsp-enable-semantic-highlighting nil))
 
 (add-hook 'scala-mode-hook 'scala-performance-settings)
-(when (featurep 'scala-ts-mode)
-  (add-hook 'scala-ts-mode-hook 'scala-performance-settings))
+(add-hook 'scala-ts-mode-hook 'scala-performance-settings)
 
 ;; Helper function to install tree-sitter grammar
 (defun install-scala-treesitter-grammar ()
@@ -286,6 +303,110 @@
           (message "✓ Scala tree-sitter grammar is available")
         (message "⚠ Scala tree-sitter grammar is not available. Run M-x install-scala-treesitter-grammar"))
     (message "Tree-sitter is not available in this Emacs build")))
+
+;; Helper function to ensure Metals is the active LSP server
+(defun scala-ensure-metals-lsp ()
+  "Ensure Metals is the active LSP server for the current Scala buffer."
+  (interactive)
+  (when (and (or (eq major-mode 'scala-mode) (eq major-mode 'scala-ts-mode))
+             (featurep 'lsp-mode))
+    (let ((current-servers (lsp--workspace-server-capabilities (lsp--current-workspace))))
+      (if (and current-servers 
+               (not (string-match "metals" (format "%s" current-servers))))
+          (progn
+            (message "Non-Metals server detected. Restarting with Metals...")
+            (lsp-workspace-shutdown)
+            (lsp-workspace-restart))
+        (if (lsp-workspaces)
+            (message "✓ Metals LSP server is active")
+          (progn
+            (message "Starting Metals LSP server...")
+            (lsp)))))))
+
+;; Helper function to diagnose LSP server issues
+(defun scala-diagnose-lsp ()
+  "Diagnose LSP server setup for Scala development."
+  (interactive)
+  (let ((diagnostics '()))
+    ;; Check if in Scala mode
+    (unless (or (eq major-mode 'scala-mode) (eq major-mode 'scala-ts-mode))
+      (push "Not in a Scala mode buffer" diagnostics))
+    
+    ;; Check if LSP mode is available
+    (unless (featurep 'lsp-mode)
+      (push "lsp-mode is not loaded" diagnostics))
+    
+    ;; Check if Metals is available
+    (unless (executable-find "metals")
+      (push "Metals executable not found in PATH" diagnostics))
+    
+    ;; Check if lsp-metals is loaded
+    (unless (featurep 'lsp-metals)
+      (push "lsp-metals package is not loaded" diagnostics))
+    
+    ;; Check current LSP workspace
+    (if (and (featurep 'lsp-mode) (lsp-workspaces))
+        (let* ((workspace (lsp--current-workspace))
+               (server-id (when workspace (lsp--workspace-server-id workspace))))
+          (if (eq server-id 'metals)
+              (push "✓ Metals LSP server is active" diagnostics)
+            (push (format "⚠ Different LSP server active: %s" server-id) diagnostics)))
+      (push "No active LSP workspace" diagnostics))
+    
+    ;; Display results
+    (with-output-to-temp-buffer "*Scala LSP Diagnostics*"
+      (dolist (item (reverse diagnostics))
+        (princ item)
+        (princ "\n"))
+      (princ "\nRecommendations:\n")
+      (princ "1. Ensure you're in a Scala project with build.sbt\n")
+      (princ "2. Run M-x scala-ensure-metals-lsp to force Metals\n")
+      (princ "3. Run M-x lsp-describe-session to see LSP details\n")
+      (princ "4. Run M-x lsp-doctor for general LSP diagnostics\n"))))
+
+;; Helper function to force scala-ts-mode
+(defun scala-force-tree-sitter-mode ()
+  "Force the current buffer to use scala-ts-mode with LSP."
+  (interactive)
+  (if (and (buffer-file-name)
+           (string-match "\\.scala\\'" (buffer-file-name)))
+      (progn
+        ;; Check tree-sitter availability
+        (if (and (fboundp 'treesit-available-p) (treesit-available-p))
+            (progn
+              ;; Check if grammar is available
+              (if (treesit-language-available-p 'scala)
+                  (progn
+                    (message "Switching to scala-ts-mode...")
+                    (scala-ts-mode)
+                    ;; Start LSP if not running
+                    (unless (lsp-workspaces)
+                      (message "Starting LSP...")
+                      (lsp))
+                    (message "✓ Now using scala-ts-mode with LSP"))
+                (progn
+                  (message "Scala tree-sitter grammar not available. Installing...")
+                  (install-scala-treesitter-grammar)
+                  ;; Retry after installation
+                  (if (treesit-language-available-p 'scala)
+                      (progn
+                        (scala-ts-mode)
+                        (unless (lsp-workspaces)
+                          (lsp))
+                        (message "✓ Grammar installed, now using scala-ts-mode"))
+                    (message "⚠ Failed to install grammar, falling back to scala-mode")))))
+          (message "⚠ Tree-sitter not available in this Emacs build")))
+    (message "⚠ Current buffer is not a Scala file")))
+
+;; Unified Scala mode setup function
+(defun scala-mode-lsp-setup ()
+  "Set up LSP for Scala mode (both regular and tree-sitter)."
+  (when (featurep 'lsp-mode)
+    (lsp-deferred)))
+
+;; Hook into both Scala modes
+(add-hook 'scala-mode-hook 'scala-mode-lsp-setup)
+(add-hook 'scala-ts-mode-hook 'scala-mode-lsp-setup)
 
 (provide 'init-scala)
 ;;; init-scala.el ends here

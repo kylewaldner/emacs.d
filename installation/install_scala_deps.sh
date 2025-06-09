@@ -64,11 +64,11 @@ check_java() {
         local major_version
         major_version=$(echo "$java_version" | awk -F. '{print $1}')
         
-        if [[ $major_version -ge 11 ]]; then
-            print_success "Java $java_version detected (requirement: Java 11+)"
+        if [[ $major_version -ge 17 ]]; then
+            print_success "Java $java_version detected (requirement: Java 17+)"
             return 0
         else
-            print_warning "Java $java_version detected, but Java 11+ is required for Metals"
+            print_warning "Java $java_version detected, but Java 17+ is required for Metals and modern Scala development"
             return 1
         fi
     else
@@ -79,6 +79,16 @@ check_java() {
 
 # Function to install Java based on distribution
 install_java() {
+    # Check if we have Java but wrong version
+    if command_exists java; then
+        local java_version
+        java_version=$(java -version 2>&1 | head -n1 | awk -F '"' '{print $2}')
+        print_status "Found existing Java $java_version, but Java 17+ is required"
+        print_status "Installing Java 17+ alongside existing installation..."
+    else
+        print_status "No Java installation found, installing Java 17+..."
+    fi
+
     local packages=()
 
     case $DISTRO in
@@ -99,13 +109,69 @@ install_java() {
             ;;
         *)
             print_error "Unsupported distribution for automatic Java installation: $DISTRO"
-            print_status "Please install Java 11+ manually and run this script again"
+            print_status "Please install Java 17+ manually and run this script again"
             return 1
             ;;
     esac
 
-    print_status "Installing Java packages: ${packages[*]}"
-    install_packages "${packages[@]}"
+    print_status "Installing Java 17+ packages: ${packages[*]}"
+    if ! install_packages "${packages[@]}"; then
+        print_error "Failed to install Java packages"
+        return 1
+    fi
+
+    # After installation, we may need to set Java 17 as default
+    print_status "Checking if Java 17+ is now available..."
+    
+    # On Arch-based systems, we might need to use archlinux-java to set the default
+    if [[ "$DISTRO" == "manjaro" || "$DISTRO" == "arch" || "$DISTRO" == "endeavouros" || "$DISTRO" == "artix" ]]; then
+        if command_exists archlinux-java; then
+            print_status "Setting Java 17 as default using archlinux-java..."
+            local java17_path
+            java17_path=$(archlinux-java status | grep "java-17-openjdk" | head -1 | awk '{print $1}')
+            if [[ -n "$java17_path" ]]; then
+                sudo archlinux-java set "$java17_path"
+                print_success "Set $java17_path as default Java"
+            else
+                print_warning "Could not find Java 17 installation to set as default"
+                print_status "Available Java versions:"
+                archlinux-java status || true
+            fi
+        fi
+    fi
+
+    # Verify that Java 17+ is now available
+    if command_exists java; then
+        local new_java_version
+        new_java_version=$(java -version 2>&1 | head -n1 | awk -F '"' '{print $2}')
+        local major_version
+        major_version=$(echo "$new_java_version" | awk -F. '{print $1}')
+        
+        if [[ $major_version -ge 17 ]]; then
+            print_success "Java $new_java_version is now available and compatible"
+        else
+            print_warning "Java $new_java_version is active, but Java 17+ is preferred"
+            print_status "You may need to configure your system to use Java 17 by default"
+            
+            # Provide distribution-specific guidance
+            case $DISTRO in
+                "manjaro"|"arch"|"endeavouros"|"artix")
+                    print_status "Try: sudo archlinux-java set java-17-openjdk"
+                    ;;
+                "ubuntu"|"debian"|"mint"|"elementary"|"zorin"|"kali"|"parrot")
+                    print_status "Try: sudo update-alternatives --config java"
+                    ;;
+                "fedora"|"centos"|"rhel"|"rocky"|"almalinux")
+                    print_status "Try: sudo alternatives --config java"
+                    ;;
+            esac
+        fi
+    else
+        print_error "Java still not found after installation"
+        return 1
+    fi
+
+    return 0
 }
 
 # Function to install packages based on distribution
@@ -261,199 +327,128 @@ install_scala_tools() {
         return 1
     fi
 
-    print_status "Installing Scala development tools via Coursier..."
-
-    # Install Scala CLI (modern way to run Scala scripts)
-    if ! command_exists scala-cli; then
-        print_status "Installing Scala CLI..."
-        cs install scala-cli
-    else
-        print_success "Scala CLI already installed"
+    # Ensure ~/.local/bin is in PATH and exists
+    local install_dir="$HOME/.local/bin"
+    mkdir -p "$install_dir"
+    
+    # Add to PATH if not already there
+    if ! echo "$PATH" | grep -q "$install_dir"; then
+        print_status "Adding $install_dir to PATH"
+        export PATH="$install_dir:$PATH"
+        # Also add to bashrc for future sessions
+        if ! grep -q 'export PATH="$HOME/.local/bin:$PATH"' ~/.bashrc; then
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+        fi
     fi
 
-    # Install Scalafmt (code formatter)
+    # Check Java version for Metals compatibility
+    local java_version
+    java_version=$(java -version 2>&1 | head -n1 | awk -F '"' '{print $2}')
+    local major_version
+    major_version=$(echo "$java_version" | awk -F. '{print $1}')
+    
+    if [[ $major_version -lt 17 ]]; then
+        print_error "Current Java version is $java_version, but Metals requires Java 17+"
+        print_error "Please ensure Java 17+ is installed before continuing"
+        return 1
+    fi
+
+    print_status "Installing essential Scala development tools via Coursier..."
+    print_status "Using Java $java_version (compatible with Metals)"
+
+    # Install Scalafmt (code formatter) - important for development
     if ! command_exists scalafmt; then
         print_status "Installing Scalafmt..."
-        cs install scalafmt
+        if cs install --install-dir "$install_dir" scalafmt; then
+            print_success "Scalafmt installed successfully"
+        else
+            print_warning "Scalafmt installation failed, but continuing..."
+        fi
     else
         print_success "Scalafmt already installed"
     fi
 
-    # Install Scalafix (refactoring tool)
+    # Install Scalafix (refactoring tool) - optional but useful
     if ! command_exists scalafix; then
         print_status "Installing Scalafix..."
-        cs install scalafix
+        if cs install --install-dir "$install_dir" scalafix; then
+            print_success "Scalafix installed successfully"
+        else
+            print_warning "Scalafix installation failed, but continuing..."
+        fi
     else
         print_success "Scalafix already installed"
     fi
 
-    # Install Metals (LSP server) - this will be available for lsp-mode to use
-    print_status "Installing Metals LSP server..."
-    cs install metals
+    # Install Metals (LSP server) - this is critical
+    print_status "Installing Metals LSP server (critical for Emacs)..."
     
-    print_success "Scala tools installed successfully"
+    if cs install --install-dir "$install_dir" --force metals; then
+        print_success "Metals LSP server installed successfully"
+    else
+        print_error "Failed to install Metals LSP server"
+        print_error "This will prevent LSP functionality in Emacs"
+        return 1
+    fi
+
+    # Refresh PATH for current session
+    export PATH="$install_dir:$PATH"
+    
+    # Small delay to allow filesystem to sync
+    sleep 1
+    
+    # Verify Metals installation
+    if command_exists metals; then
+        local metals_version
+        metals_version=$(metals --version 2>/dev/null | head -1 || echo 'version check failed')
+        print_success "Metals verification successful: $metals_version"
+    elif [[ -f "$install_dir/metals" ]]; then
+        print_success "Metals binary found at $install_dir/metals"
+        chmod +x "$install_dir/metals"
+        print_status "You may need to restart your shell or run: source ~/.bashrc"
+    else
+        print_error "Metals installation verification failed"
+        return 1
+    fi
+    
+    print_success "Essential Scala tools installation completed"
+    print_status "Tools installed in: $install_dir"
+    
+    # Show what was installed
+    print_status "Installed tools:"
+    [[ -f "$install_dir/metals" ]] && echo "  ✓ Metals LSP server (critical)"
+    [[ -f "$install_dir/scalafmt" ]] && echo "  ✓ Scalafmt (code formatter)"
+    [[ -f "$install_dir/scalafix" ]] && echo "  ✓ Scalafix (refactoring tool)"
 }
 
-# Function to install tree-sitter grammar for Scala
-install_scala_treesitter_grammar() {
-    if ! command_exists tree-sitter; then
-        print_warning "Tree-sitter not found, skipping grammar installation"
-        return 1
-    fi
-
-    print_status "Installing Scala tree-sitter grammar..."
-    
-    # Create tree-sitter directory in .emacs.d
-    local grammar_dir="$HOME/.emacs.d/tree-sitter"
-    mkdir -p "$grammar_dir"
-    
-    # Check if grammar already exists
-    if [[ -f "$grammar_dir/libtree-sitter-scala.so" ]] || [[ -f "$grammar_dir/libtree-sitter-scala.dylib" ]] || [[ -f "$grammar_dir/libtree-sitter-scala.dll" ]]; then
-        print_success "Scala tree-sitter grammar already installed"
-        return 0
-    fi
-    
-    # Create temporary directory for compilation
-    local temp_dir=$(mktemp -d)
-    cd "$temp_dir"
-    
-    print_status "Downloading Scala tree-sitter grammar..."
-    if ! git clone https://github.com/tree-sitter/tree-sitter-scala.git; then
-        print_error "Failed to download Scala tree-sitter grammar"
-        cd - >/dev/null
-        rm -rf "$temp_dir"
-        return 1
-    fi
-    
-    cd tree-sitter-scala
-    
-    print_status "Compiling Scala tree-sitter grammar..."
-    
-    # Determine the correct shared library extension for the platform
-    local lib_ext="so"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        lib_ext="dylib"
-    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-        lib_ext="dll"
-    fi
-    
-    # Compile the grammar
-    local lib_name="libtree-sitter-scala.$lib_ext"
-    
-    if command_exists gcc; then
-        if gcc -shared -fPIC -o "$lib_name" src/parser.c -I src/; then
-            print_success "Successfully compiled Scala tree-sitter grammar"
-        else
-            print_error "Failed to compile Scala tree-sitter grammar with gcc"
-            cd - >/dev/null
-            rm -rf "$temp_dir"
-            return 1
-        fi
-    elif command_exists clang; then
-        if clang -shared -fPIC -o "$lib_name" src/parser.c -I src/; then
-            print_success "Successfully compiled Scala tree-sitter grammar"
-        else
-            print_error "Failed to compile Scala tree-sitter grammar with clang"
-            cd - >/dev/null
-            rm -rf "$temp_dir"
-            return 1
-        fi
-    else
-        print_error "No suitable C compiler found (gcc or clang required)"
-        cd - >/dev/null
-        rm -rf "$temp_dir"
-        return 1
-    fi
-    
-    # Move the compiled grammar to the Emacs tree-sitter directory
-    if mv "$lib_name" "$grammar_dir/"; then
-        print_success "Installed Scala tree-sitter grammar to $grammar_dir/"
-    else
-        print_error "Failed to move compiled grammar to $grammar_dir/"
-        cd - >/dev/null
-        rm -rf "$temp_dir"
-        return 1
-    fi
-    
-    # Cleanup
-    cd - >/dev/null
-    rm -rf "$temp_dir"
-    
-    print_success "Scala tree-sitter grammar installation completed!"
-    return 0
-}
-
-# Function to install tree-sitter (for Emacs 29+)
+# Function to install tree-sitter (optional, for Emacs 29+)
 install_tree_sitter() {
     if command_exists tree-sitter; then
         print_success "Tree-sitter already installed"
         return 0
     fi
 
-    print_status "Installing tree-sitter..."
-
-    case $DISTRO in
-        "manjaro"|"arch"|"endeavouros"|"artix")
-            install_packages "tree-sitter"
-            ;;
-        "ubuntu"|"debian"|"mint"|"elementary"|"zorin"|"kali"|"parrot")
-            # Check if available in repos (newer Ubuntu/Debian)
-            if apt-cache show tree-sitter >/dev/null 2>&1; then
-                install_packages "tree-sitter"
-            else
-                install_tree_sitter_from_source
-            fi
-            ;;
-        "fedora"|"centos"|"rhel"|"rocky"|"almalinux")
-            # Check if available in repos
-            if dnf list tree-sitter >/dev/null 2>&1 || yum list tree-sitter >/dev/null 2>&1; then
-                install_packages "tree-sitter"
-            else
-                install_tree_sitter_from_source
-            fi
-            ;;
-        *)
-            install_tree_sitter_from_source
-            ;;
-    esac
-}
-
-# Function to install tree-sitter from source
-install_tree_sitter_from_source() {
-    print_status "Installing tree-sitter from source..."
+    print_status "Checking tree-sitter support (for Emacs 29+)..."
+    if command_exists tree-sitter; then
+        print_success "Tree-sitter found - enhanced syntax highlighting available"
+    else
+        print_status "Tree-sitter not found - installing if available in package manager..."
+        case $DISTRO in
+            "manjaro"|"arch"|"endeavouros"|"artix")
+                if install_packages "tree-sitter"; then
+                    print_success "Tree-sitter installed successfully"
+                else
+                    print_warning "Tree-sitter installation failed"
+                fi
+                ;;
+            *)
+                print_status "Tree-sitter not available in package manager for $DISTRO"
+                ;;
+        esac
+    fi
     
-    # Install build dependencies
-    case $DISTRO in
-        "manjaro"|"arch"|"endeavouros"|"artix")
-            install_packages "base-devel" "git"
-            ;;
-        "ubuntu"|"debian"|"mint"|"elementary"|"zorin"|"kali"|"parrot")
-            install_packages "build-essential" "git"
-            ;;
-        "fedora"|"centos"|"rhel"|"rocky"|"almalinux")
-            install_packages "gcc" "gcc-c++" "make" "git"
-            ;;
-        *)
-            print_warning "Please ensure you have a C compiler and make installed"
-            ;;
-    esac
-
-    # Clone and build tree-sitter
-    local temp_dir=$(mktemp -d)
-    cd "$temp_dir"
-    
-    git clone https://github.com/tree-sitter/tree-sitter.git
-    cd tree-sitter
-    make
-    sudo make install
-    
-    # Update shared library cache
-    sudo ldconfig 2>/dev/null || true
-    
-    cd -
-    rm -rf "$temp_dir"
-    
-    print_success "Tree-sitter installed from source"
+    print_status "Note: Modern Emacs (29+) can install tree-sitter grammars automatically"
+    print_status "The Scala grammar will be installed when you first open a .scala file"
 }
 
 # Function to setup .scalafmt.conf example
@@ -525,8 +520,9 @@ This document describes the tools installed for modern Scala development with Em
 
 === Core Dependencies ===
 
-1. Java 17 (OpenJDK)
-   - Required for running Scala and SBT
+1. Java 17+ (OpenJDK)
+   - Required for running Scala, SBT, and Metals LSP server
+   - Minimum version: Java 17 (updated requirement for modern tooling)
    - Verify: java -version
 
 2. SBT (Scala Build Tool)
@@ -597,12 +593,13 @@ The following Emacs packages work with these tools:
 
 If you encounter issues:
 
-1. Check Java version: java -version (should be 11+)
+1. Check Java version: java -version (should be 17+)
 2. Verify PATH includes ~/.local/bin
 3. Run: source ~/.bashrc to reload PATH
 4. For tree-sitter issues: M-x scala-treesitter-status in Emacs
 5. To reinstall grammar: M-x install-scala-treesitter-grammar in Emacs
 6. For LSP issues: M-x lsp-doctor in Emacs
+7. If Metals is not found: Check ~/.local/bin/metals exists and is executable
 
 For more information, see:
 - Metals documentation: https://scalameta.org/metals/
@@ -629,15 +626,16 @@ main() {
     # Check and install Java
     print_header "1. Checking Java installation..."
     if ! check_java; then
-        print_status "Installing Java 17..."
+        print_status "Installing Java 17+ (required for Metals and modern Scala development)..."
         if ! install_java; then
-            print_error "Failed to install Java. Please install Java 11+ manually."
+            print_error "Failed to install Java. Please install Java 17+ manually."
             exit 1
         fi
         
         # Check again after installation
         if ! check_java; then
             print_error "Java installation verification failed"
+            print_status "Please ensure Java 17+ is properly installed and try again"
             exit 1
         fi
     fi
@@ -662,25 +660,23 @@ main() {
     # Install Scala tools
     print_header "4. Installing Scala development tools..."
     if ! install_scala_tools; then
-        print_error "Failed to install Scala tools"
-        exit 1
+        print_error "Critical Scala tools installation failed"
+        print_status "The script will continue, but LSP functionality may not work"
+        print_status "You can try running the script again later"
     fi
     echo
 
     # Install tree-sitter (optional, for Emacs 29+)
-    print_header "5. Installing tree-sitter (for Emacs 29+)..."
-    if ! install_tree_sitter; then
-        print_warning "Tree-sitter installation failed, but this is optional"
-        print_status "You can still use scala-mode without tree-sitter"
+    print_header "5. Checking tree-sitter support (for Emacs 29+)..."
+    if command_exists tree-sitter; then
+        local ts_version
+        ts_version=$(tree-sitter --version 2>&1 || echo "unknown")
+        print_success "✓ Tree-sitter installed ($ts_version)"
+        print_status "  Scala grammar will be installed automatically by Emacs when first needed"
     else
-        # Install Scala tree-sitter grammar if tree-sitter was successfully installed
-        print_header "5a. Installing Scala tree-sitter grammar..."
-        if ! install_scala_treesitter_grammar; then
-            print_warning "Scala tree-sitter grammar installation failed"
-            print_status "You can install it manually in Emacs: M-x install-scala-treesitter-grammar"
-        fi
+        print_status "○ Tree-sitter not found (optional for Emacs 29+)"
+        print_status "  You can still use scala-mode without tree-sitter"
     fi
-    echo
 
     # Setup configuration files
     print_header "6. Setting up configuration..."
@@ -693,50 +689,61 @@ main() {
     local success=true
     
     if command_exists java; then
-        print_success "✓ Java installed"
+        local java_version
+        java_version=$(java -version 2>&1 | head -n1 | awk -F '"' '{print $2}')
+        local major_version
+        major_version=$(echo "$java_version" | awk -F. '{print $1}')
+        
+        if [[ $major_version -ge 17 ]]; then
+            print_success "✓ Java $java_version installed (Java 17+ required)"
+        else
+            print_error "✗ Java $java_version found, but Java 17+ is required"
+            success=false
+        fi
     else
         print_error "✗ Java not found"
         success=false
     fi
     
     if command_exists sbt; then
-        print_success "✓ SBT installed"
+        local sbt_version
+        sbt_version=$(sbt --version 2>&1 | grep "sbt version" | awk '{print $4}' || echo "unknown")
+        print_success "✓ SBT $sbt_version installed"
     else
         print_error "✗ SBT not found"
         success=false
     fi
     
     if command_exists cs; then
-        print_success "✓ Coursier installed"
+        local cs_version
+        cs_version=$(cs --version 2>&1 | head -1 || echo "unknown")
+        print_success "✓ Coursier installed ($cs_version)"
     else
         print_error "✗ Coursier not found"
         success=false
     fi
     
     if command_exists scalafmt; then
-        print_success "✓ Scalafmt installed"
+        local scalafmt_version
+        scalafmt_version=$(scalafmt --version 2>&1 || echo "unknown")
+        print_success "✓ Scalafmt $scalafmt_version installed"
     else
         print_warning "⚠ Scalafmt not found in PATH"
     fi
     
     if command_exists metals; then
-        print_success "✓ Metals LSP server installed"
+        local metals_version
+        metals_version=$(metals --version 2>/dev/null | head -1 || echo "version check failed")
+        print_success "✓ Metals LSP server installed ($metals_version)"
     else
-        print_warning "⚠ Metals not found in PATH"
-    fi
-    
-    if command_exists tree-sitter; then
-        print_success "✓ Tree-sitter installed"
-        
-        # Check for Scala grammar
-        local grammar_dir="$HOME/.emacs.d/tree-sitter"
-        if [[ -f "$grammar_dir/libtree-sitter-scala.so" ]] || [[ -f "$grammar_dir/libtree-sitter-scala.dylib" ]] || [[ -f "$grammar_dir/libtree-sitter-scala.dll" ]]; then
-            print_success "✓ Scala tree-sitter grammar installed"
+        # Check if the binary exists even if not in PATH
+        if [[ -f "$HOME/.local/bin/metals" ]]; then
+            print_warning "⚠ Metals installed at ~/.local/bin/metals but not in current PATH"
+            print_status "  Run: source ~/.bashrc or restart your terminal"
         else
-            print_warning "⚠ Scala tree-sitter grammar not found"
+            print_error "✗ Metals not found - this is required for LSP functionality"
+            success=false
         fi
-    else
-        print_warning "⚠ Tree-sitter not found (optional for Emacs 29+)"
     fi
     
     echo

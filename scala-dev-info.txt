@@ -4,8 +4,9 @@ This document describes the tools installed for modern Scala development with Em
 
 === Core Dependencies ===
 
-1. Java 17 (OpenJDK)
-   - Required for running Scala and SBT
+1. Java 17+ (OpenJDK)
+   - Required for running Scala, SBT, and Metals LSP server
+   - Minimum version: Java 17 (updated requirement for modern tooling)
    - Verify: java -version
 
 2. SBT (Scala Build Tool)
@@ -76,16 +77,15 @@ The following Emacs packages work with these tools:
 
 If you encounter issues:
 
-1. Check Java version: java -version (should be 11+)
+1. Check Java version: java -version (should be 17+)
 2. Verify PATH includes ~/.local/bin
 3. Run: source ~/.bashrc to reload PATH
 4. For tree-sitter issues: M-x scala-treesitter-status in Emacs
 5. To reinstall grammar: M-x install-scala-treesitter-grammar in Emacs
 6. For LSP issues: M-x lsp-doctor in Emacs
+7. If Metals is not found: Check ~/.local/bin/metals exists and is executable
 
 For more information, see:
 - Metals documentation: https://scalameta.org/metals/
 - Tree-sitter setup: https://tree-sitter.github.io/tree-sitter/
 - SBT documentation: https://www.scala-sbt.org/
-
-Installation completed on: Wed Jun  4 02:28:28 PM EDT 2025
