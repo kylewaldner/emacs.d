@@ -41,6 +41,22 @@ EMACS_SERVER_CONFIG_DIR="$SCRIPT_DIR/emacs-server-config"
 
 # Function to get default Emacs path from service file template
 get_default_emacs_path() {
+    local template_file="$EMACS_SERVER_CONFIG_DIR/emacsclientrc.sh"
+
+    if [[ -f "$template_file" ]]; then
+        # Extract EMACS_SERVER_PATH from template and remove /bin suffix to get base path
+        local emacs_server_path
+        emacs_server_path=$(grep "^export EMACS_SERVER_PATH=" "$template_file" | cut -d'"' -f2)
+        if [[ -n "$emacs_server_path" ]]; then
+            # Remove /bin suffix and expand $HOME
+            local base_path="${emacs_server_path%/bin}"
+            base_path="${base_path/#\$HOME/$HOME}"
+            echo "$base_path"
+            return 0
+        fi
+    fi
+
+    # Fallback to hardcoded default if template is missing or malformed
     echo "$HOME/emacs/server_emacs"
 }
 
@@ -104,8 +120,11 @@ get_shell_rc_file() {
 # Function to get user input for Emacs path
 get_emacs_path() {
     local emacs_path
-    local default_path="$HOME/emacs/server_emacs"
+    local default_path
     local current_emacs_server_path
+
+    # Get default path from template
+    default_path=$(get_default_emacs_path)
 
     # Check if emacsclientrc.sh exists and extract current EMACS_SERVER_PATH
     local emacsclientrc_file="$HOME/.emacsclient_bash_aliases"
@@ -114,6 +133,8 @@ get_emacs_path() {
         if [[ -n "$current_emacs_server_path" ]]; then
             # Remove /bin suffix if present to get the base path
             current_emacs_server_path="${current_emacs_server_path%/bin}"
+            # Expand $HOME if present
+            current_emacs_server_path="${current_emacs_server_path/#\$HOME/$HOME}"
             print_status "Found existing EMACS_SERVER_PATH: $current_emacs_server_path/bin" >&2
             default_path="$current_emacs_server_path"
         fi
@@ -156,6 +177,9 @@ get_emacs_path() {
     # Expand tilde if present
     emacs_path="${emacs_path/#\~/$HOME}"
 
+    # Expand $HOME if present
+    emacs_path="${emacs_path/#\$HOME/$HOME}"
+
     # Always return a valid path - use default if empty
     if [[ -z "$emacs_path" ]]; then
         emacs_path="$default_path"
@@ -170,7 +194,10 @@ create_systemd_service() {
     local emacs_path="$1"
     local service_file="$HOME/.config/systemd/user/emacs.service"
     local template_file="$EMACS_SERVER_CONFIG_DIR/emacs.service"
-    local default_path="$HOME/emacs/server_emacs"
+    local default_path
+
+    # Get default path from template
+    default_path=$(get_default_emacs_path)
 
     print_status "Creating systemd user service file..."
 
@@ -192,55 +219,31 @@ create_systemd_service() {
 
     print_status "Processing service file template..."
 
-    # Check what paths are currently in the template
-    local template_exec_start_path
-    local template_exec_stop_path
+    # Normalize emacs_path - remove /bin suffix if present to get base path
+    local normalized_emacs_path="${emacs_path%/bin}"
 
-    # Extract paths from template
-    template_exec_start_path=$(echo "$service_content" | grep "^ExecStart=" | sed 's/ExecStart=\(.*\)\/bin\/emacs.*/\1/')
-    template_exec_stop_path=$(echo "$service_content" | grep "^ExecStop=" | sed 's/ExecStop=\(.*\)\/bin\/emacsclient.*/\1/')
-
-    # Convert %h to actual home path for comparison
-    template_exec_start_path="${template_exec_start_path//%h/$HOME}"
-    template_exec_stop_path="${template_exec_stop_path//%h/$HOME}"
-
-    print_status "Template ExecStart path: $template_exec_start_path"
-    print_status "Template ExecStop path: $template_exec_stop_path"
-    print_status "User specified path: $emacs_path"
-
-    # Check if user specified path is different from template paths
+    # Check if user specified path differs from default
     local needs_update=false
-    if [[ -n "$emacs_path" && "$emacs_path" != "$template_exec_start_path" ]]; then
+    if [[ -n "$normalized_emacs_path" && "$normalized_emacs_path" != "$default_path" ]]; then
         needs_update=true
-        print_status "User path differs from template - update needed"
+        print_status "Custom Emacs path detected - update needed"
     else
-        print_status "User path matches template - keeping original paths"
+        print_status "User path matches default - keeping %h systemd variables"
     fi
 
-    # Update paths if necessary
+    # Update paths only if user specified a custom path
     if [[ "$needs_update" == "true" ]]; then
-        print_status "Custom Emacs path detected: $emacs_path"
+        print_status "Custom Emacs path detected: $normalized_emacs_path"
         print_status "Updating ExecStart and ExecStop paths in service file..."
 
-        # Replace ExecStart path - handle both %h format and absolute paths
-        if [[ "$service_content" == *"ExecStart=%h/emacs/server_emacs/bin/emacs"* ]]; then
-            service_content=$(echo "$service_content" | sed "s|ExecStart=%h/emacs/server_emacs/bin/emacs|ExecStart=${emacs_path}/bin/emacs|g")
-        else
-            # Handle other potential formats
-            service_content=$(echo "$service_content" | sed "s|ExecStart=\(.*\)/bin/emacs|ExecStart=${emacs_path}/bin/emacs|g")
-        fi
+        # Replace %h-based paths with absolute path for custom installations
+        # Match any path starting with %h and ending with /bin/emacs or /bin/emacsclient
+        service_content=$(echo "$service_content" | sed "s|ExecStart=%h[^[:space:]]*/bin/emacs|ExecStart=${normalized_emacs_path}/bin/emacs|g")
+        service_content=$(echo "$service_content" | sed "s|ExecStop=%h[^[:space:]]*/bin/emacsclient|ExecStop=${normalized_emacs_path}/bin/emacsclient|g")
 
-        # Replace ExecStop path - handle both %h format and absolute paths
-        if [[ "$service_content" == *"ExecStop=%h/emacs/server_emacs/bin/emacsclient"* ]]; then
-            service_content=$(echo "$service_content" | sed "s|ExecStop=%h/emacs/server_emacs/bin/emacsclient|ExecStop=${emacs_path}/bin/emacsclient|g")
-        else
-            # Handle other potential formats
-            service_content=$(echo "$service_content" | sed "s|ExecStop=\(.*\)/bin/emacsclient|ExecStop=${emacs_path}/bin/emacsclient|g")
-        fi
-
-        print_success "Updated service file paths to use: $emacs_path"
+        print_success "Updated service file paths to use: $normalized_emacs_path"
     else
-        print_status "Using template paths as-is (keeping systemd specifiers if present)"
+        print_status "Using template paths as-is (keeping %h systemd variables)"
     fi
 
     # Write the processed content to the service file
@@ -298,7 +301,10 @@ install_shell_aliases() {
     local emacs_path="$1"
     local emacsclientrc_file="$HOME/.emacsclient_bash_aliases"
     local template_file="$EMACS_SERVER_CONFIG_DIR/emacsclientrc.sh"
-    local default_path="$HOME/emacs/server_emacs"
+    local default_path
+
+    # Get default path from template
+    default_path=$(get_default_emacs_path)
 
     print_status "Setting up shell configuration..."
 
