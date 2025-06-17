@@ -3,6 +3,14 @@
 ;; Configuration for Scala development with SBT, Metals (LSP), tree-sitter, and modern tooling
 ;; Supports both traditional scala-mode and tree-sitter scala-ts-mode
 ;; Uses unified LSP configuration from init-lsp-unified.el
+;;
+;; AUTO IMPORT FUNCTIONALITY:
+;; - Auto imports are enabled through LSP code actions and completion
+;; - Use C-c I to trigger auto import at point
+;; - Use C-c C-o to organize imports and format buffer
+;; - Use C-c i for standard lsp-organize-imports
+;; - Completion will automatically suggest and add imports when accepting items
+;; - Code actions (including imports) are shown in sideline and via C-c l a a
 ;;; Code:
 
 ;; Load unified LSP configuration first
@@ -104,7 +112,23 @@
   ;; Enable Metals specific features
   (setq lsp-metals-show-implicit-arguments t)
   (setq lsp-metals-show-implicit-conversions-and-classes t)
-  (setq lsp-metals-show-inferred-type t))
+  (setq lsp-metals-show-inferred-type t)
+
+  ;; Auto import and code actions configuration
+  ;; These settings enhance auto import functionality
+  (setq lsp-metals-enable-code-actions t)  ; Enable code actions (includes auto imports)
+  (setq lsp-enable-snippet t)              ; Enable snippets for better completion
+  (setq lsp-completion-enable-additional-text-edit t)  ; Enable automatic import additions
+
+  ;; Configure code action settings for better auto import experience
+  (with-eval-after-load 'lsp-mode
+    ;; Automatically show code actions on cursor
+    (setq lsp-ui-sideline-show-code-actions t)
+    (setq lsp-ui-sideline-delay 0.1)
+
+    ;; Enable automatic imports when accepting completions
+    (setq lsp-completion-show-detail t)
+    (setq lsp-completion-show-kind t)))
 
 ;; Tree-sitter structural editing (Emacs 29+)
 (when (and (straight-use-package 'combobulate)
@@ -150,10 +174,44 @@
   (when (featurep 'lsp-mode)
     (local-set-key (kbd "C-c i") 'lsp-organize-imports)
     (local-set-key (kbd "C-c r") 'lsp-rename)
-    (local-set-key (kbd "C-c f") 'lsp-format-buffer)))
+    (local-set-key (kbd "C-c f") 'lsp-format-buffer)
+    ;; Auto import keybindings (added by scala-quick-import-setup)
+    ;; C-c I   - Auto import symbol at point
+    ;; C-c C-o - Organize imports and format buffer
+    ))
 
 (add-hook 'scala-mode-hook 'scala-mode-setup-keybindings)
 (add-hook 'scala-ts-mode-hook 'scala-mode-setup-keybindings)
+
+;; Enhanced auto import functionality
+(defun scala-auto-import-at-point ()
+  "Attempt to auto import the symbol at point using LSP code actions."
+  (interactive)
+  (if (and (featurep 'lsp-mode) (lsp-workspaces))
+      (let ((actions (lsp-code-actions-at-point)))
+        (if actions
+            (progn
+              ;; Look for import-related actions
+              (let ((import-actions (seq-filter
+                                     (lambda (action)
+                                       (let ((title (gethash "title" action "")))
+                                         (or (string-match-p "import" title)
+                                             (string-match-p "Import" title))))
+                                     actions)))
+                (if import-actions
+                    (lsp-execute-code-action (car import-actions))
+                  ;; Fallback: show all code actions if no import actions found
+                  (call-interactively 'lsp-execute-code-action))))
+          (message "No code actions available at point")))
+    (message "LSP not active or no workspace available")))
+
+(defun scala-organize-imports-and-format ()
+  "Organize imports and format the buffer."
+  (interactive)
+  (when (and (featurep 'lsp-mode) (lsp-workspaces))
+    (lsp-organize-imports)
+    (lsp-format-buffer)))
+
 
 ;; Helper function to install tree-sitter grammar
 (defun install-scala-treesitter-grammar ()

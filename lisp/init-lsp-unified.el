@@ -22,6 +22,15 @@
         lsp-signature-auto-activate nil  ; Reduce noise
         lsp-signature-render-documentation nil)
 
+  ;; Auto import and code action settings for better IDE experience
+  (setq lsp-completion-enable-additional-text-edit t  ; Automatically add imports on completion
+        lsp-enable-snippet t                          ; Enable snippets
+        lsp-completion-show-detail t                  ; Show detailed completion info
+        lsp-completion-show-kind t                    ; Show completion item kinds
+        lsp-enable-on-type-formatting nil             ; Can be enabled per language if needed
+        lsp-enable-imenu t                           ; Enable imenu integration
+        lsp-enable-which-key-integration t)          ; Enable which-key integration
+
   ;; Disable any default Super key bindings
   (with-eval-after-load 'lsp-mode
     ;; Remove any global Super key bindings that LSP might set
