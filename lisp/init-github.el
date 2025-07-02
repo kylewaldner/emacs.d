@@ -16,7 +16,8 @@
 
 (defun github-link-at-point ()
   "Create a GitHub link for the current cursor position or selected region and copy it to clipboard.
-   If a region is selected, the link will include the line range."
+   If a region is selected, the link will include the line range.
+   If cursor is on line 1 and no region is selected, no line number is included."
   (interactive)
   (let* ((use-region (use-region-p))
          (start-line (if use-region
@@ -43,9 +44,17 @@
          (owner (car github-info))
          (repo (cdr github-info))
          (branch (string-trim (shell-command-to-string "git symbolic-ref --short HEAD 2>/dev/null || git rev-parse HEAD")))
-         (line-ref (if (and use-region (not (= start-line end-line)))
-                       (format "#L%d-L%d" start-line end-line)
-                     (format "#L%d" start-line)))
+         ;; Create line reference, but make it empty if on line 1 with no region
+         (line-ref (cond
+                    ;; If region spans multiple lines
+                    ((and use-region (not (= start-line end-line)))
+                     (format "#L%d-L%d" start-line end-line))
+                    ;; If on line 1 with no region or region within line 1
+                    ((and (= start-line 1) (or (not use-region) (= end-line 1)))
+                     "")
+                    ;; Otherwise, single line reference
+                    (t
+                     (format "#L%d" start-line))))
          (github-url (format "https://github.com/%s/%s/blob/%s/%s%s"
                              owner repo branch relative-path line-ref)))
     (kill-new github-url)
