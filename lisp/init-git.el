@@ -41,8 +41,25 @@
     (define-key vc-prefix-map (kbd "l") 'sanityinc/magit-or-vc-log-file)))
 
 
+;; Custom command to undo last commit and keep changes
+(defun kyle/magit-undo-last-commit ()
+  "Undo the last commit but keep the changes staged.
+This runs 'git reset --soft HEAD~1'."
+  (interactive)
+  (if (magit-anything-staged-p)
+      (when (yes-or-no-p "You have staged changes. Undo last commit anyway? ")
+        (magit-run-git "reset" "--soft" "HEAD~1"))
+    (magit-run-git "reset" "--soft" "HEAD~1"))
+  (magit-refresh))
+
 (after-load 'magit
-  (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-section-up))
+  (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-section-up)
+  ;; Bind the undo last commit command to 'U' key
+  (define-key magit-status-mode-map (kbd "M-u") 'kyle/magit-undo-last-commit)
+
+  ;; Add the command to Magit's transient system so it appears in help menu
+  (transient-append-suffix 'magit-dispatch "X"
+    '("M-u" "Undo last commit (soft)" kyle/magit-undo-last-commit)))
 
 (straight-use-package 'magit-todos)
 
