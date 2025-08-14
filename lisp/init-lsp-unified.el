@@ -4,6 +4,74 @@
 ;; Uses standard C-c l prefix and explicitly disables conflicting Super key bindings
 ;;; Code:
 
+;; Set file watch ignore patterns BEFORE loading lsp-mode
+;; This ensures they're applied when LSP servers start
+(setq lsp-file-watch-ignored-directories
+      '(;; Version control
+        "[/\\\\]\\.git\\'"
+        "[/\\\\]\\.github\\'"
+        "[/\\\\]\\.circleci\\'"
+        ;; Go specific
+        "[/\\\\]vendor\\'"
+        "[/\\\\]\\.vendor\\'"
+        "[/\\\\]bin\\'"
+        "[/\\\\]build\\'"
+        "[/\\\\]dist\\'"
+        "[/\\\\]target\\'"
+        ;; Node/JS (in case of mixed projects)
+        "[/\\\\]node_modules\\'"
+        ;; Python
+        "[/\\\\]\\.venv\\'"
+        "[/\\\\]venv\\'"
+        "[/\\\\]__pycache__\\'"
+        "[/\\\\]\\.pytest_cache\\'"
+        "[/\\\\]\\.mypy_cache\\'"
+        ;; Build artifacts
+        "[/\\\\]\\.cache\\'"
+        "[/\\\\]\\.tmp\\'"
+        "[/\\\\]tmp\\'"
+        ;; IDE
+        "[/\\\\]\\.idea\\'"
+        "[/\\\\]\\.vscode\\'"
+        ;; OS
+        "[/\\\\]\\.DS_Store\\'"
+        ;; Archives
+        "[/\\\\].*\\.zip\\'"
+        "[/\\\\].*\\.tar\\.gz\\'"
+        ;; Go test cache
+        "[/\\\\]\\.test\\'"
+        "[/\\\\]testdata\\'"
+        ;; Coverage
+        "[/\\\\]coverage\\'"
+        "[/\\\\]htmlcov\\'"
+        "[/\\\\]\\.coverage\\'"))
+
+;; Additional file patterns to ignore
+(setq lsp-file-watch-ignored-files
+      '(;; Lock files
+        "[/\\\\]\\.#.*\\'"
+        ;; Backup files
+        "[/\\\\].*~\\'"
+        ;; Binary files
+        "[/\\\\].*\\.exe\\'"
+        "[/\\\\].*\\.dll\\'"
+        "[/\\\\].*\\.so\\'"
+        "[/\\\\].*\\.dylib\\'"
+        ;; Go binaries (often no extension)
+        "[/\\\\][^/\\\\]*[^/\\\\.]+$"  ; Files without extension in root
+        ;; Archives
+        "[/\\\\].*\\.zip\\'"
+        "[/\\\\].*\\.tar\\'"
+        "[/\\\\].*\\.gz\\'"
+        ;; Images
+        "[/\\\\].*\\.png\\'"
+        "[/\\\\].*\\.jpg\\'"
+        "[/\\\\].*\\.jpeg\\'"
+        "[/\\\\].*\\.gif\\'"
+        ;; Databases
+        "[/\\\\].*\\.db\\'"
+        "[/\\\\].*\\.sqlite\\'"))
+
 ;; Core LSP Mode Configuration
 (when (straight-use-package 'lsp-mode)
   ;; Set standard keymap prefix - this is the ONLY prefix we want to use
@@ -16,8 +84,8 @@
         lsp-log-io nil
         lsp-completion-provider :company-capf
         lsp-headerline-breadcrumb-enable t
-        lsp-enable-file-watchers nil  ; Disabled for performance
-        lsp-file-watch-threshold 5000
+        lsp-enable-file-watchers t   ; Enable with ignore patterns
+        lsp-file-watch-threshold 1000 ; Lower threshold now that we have good ignores
         lsp-enable-text-document-color nil
         lsp-signature-auto-activate nil  ; Reduce noise
         lsp-signature-render-documentation nil)
@@ -158,6 +226,35 @@
 
 ;; Call the function to clean up any existing Super bindings
 (disable-super-lsp-bindings)
+
+;; Register the custom workspace configuration
+(with-eval-after-load 'lsp-mode
+  ;; Add more patterns to ignore go module cache and go installation
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]go[/\\\\]pkg[/\\\\]mod\\'")
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]usr[/\\\\]local[/\\\\]go\\'"))
+
+;; Debug function to check what directories LSP wants to watch
+(defun lsp-debug-file-watchers ()
+  "Show information about LSP file watching in the current buffer."
+  (interactive)
+  (if lsp-mode
+      (let* ((workspace (lsp-workspaces))
+             (root (when workspace (lsp-workspace-root (car workspace)))))
+        (with-current-buffer (get-buffer-create "*LSP File Watch Debug*")
+          (erase-buffer)
+          (insert "LSP File Watching Debug Information\n")
+          (insert "===================================\n\n")
+          (insert (format "Workspace root: %s\n" (or root "Not found")))
+          (insert (format "File watchers enabled: %s\n" lsp-enable-file-watchers))
+          (insert (format "File watch threshold: %d\n" lsp-file-watch-threshold))
+          (insert "\nIgnored directories:\n")
+          (dolist (pattern lsp-file-watch-ignored-directories)
+            (insert (format "  %s\n" pattern)))
+          (insert "\nIgnored files:\n")
+          (dolist (pattern lsp-file-watch-ignored-files)
+            (insert (format "  %s\n" pattern)))
+          (display-buffer (current-buffer))))
+    (message "LSP mode is not active in this buffer")))
 
 ;; Display helpful information about LSP keybindings
 (defun lsp-show-keybindings ()
