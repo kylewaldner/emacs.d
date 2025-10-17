@@ -45,6 +45,24 @@ This is useful when followed by an immediate kill."
 
 (define-key isearch-mode-map [(control return)] 'sanityinc/isearch-exit-other-end)
 
+;; Enhanced isearch that populates search bar with selected text
+(defun isearch-forward-with-region ()
+  "Start isearch forward, populating search bar with selected text if region is active."
+  (interactive)
+  (let ((search-text (when (use-region-p)
+                       (buffer-substring-no-properties (region-beginning) (region-end)))))
+    (if search-text
+        (progn
+          ;; Deactivate the region
+          (deactivate-mark)
+          ;; Start isearch with the selected text
+          (isearch-forward)
+          (isearch-yank-string search-text))
+      ;; No region active, start normal isearch
+      (isearch-forward))))
+
+;; Bind the enhanced isearch function to C-s
+(global-set-key (kbd "C-s") 'isearch-forward-with-region)
 
 (provide 'init-isearch)
 ;;; init-isearch.el ends here
