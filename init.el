@@ -132,6 +132,7 @@
 ;; (require 'init-c)
 ;;(require 'init-cpp)
 (require 'init-scala)
+(require 'init-kotlin)
 (require 'init-claude)
 (require 'init-golang)
 (require 'init-verilog)
