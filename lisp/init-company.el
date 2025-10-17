@@ -24,6 +24,10 @@
     (define-key company-active-map (kbd "M-/") 'company-other-backend)
     (define-key company-active-map (kbd "C-n") 'company-select-next)
     (define-key company-active-map (kbd "C-p") 'company-select-previous)
+    ;; Preserve capitalization in suggestions (avoid downcasing like myApp -> myapp)
+    (setq company-dabbrev-downcase nil
+          company-dabbrev-ignore-case t
+          company-dabbrev-code-ignore-case t)
     (setq-default company-dabbrev-other-buffers 'all
                   company-tooltip-align-annotations t
                   company-idle-delay 0
