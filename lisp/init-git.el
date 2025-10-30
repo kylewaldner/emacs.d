@@ -2,6 +2,16 @@
 ;;; Commentary:
 
 ;; See also init-github.el.
+;;
+;; For enhanced magit diff syntax highlighting, install delta:
+;;   Debian/Ubuntu: sudo apt install git-delta
+;;   Fedora:        sudo dnf install git-delta
+;;   Arch:          sudo pacman -S git-delta
+;;   macOS:         brew install git-delta
+;;   Cargo:         cargo install git-delta
+;;
+;; The config will automatically detect and use delta if available,
+;; otherwise it falls back to enhanced built-in highlighting.
 
 ;;; Code:
 
@@ -19,6 +29,18 @@
 
 (when (straight-use-package 'magit)
   (setq-default magit-diff-refine-hunk t)
+
+  ;; Smart delta integration: use magit-delta if delta CLI is available
+  (if (executable-find "delta")
+      (when (straight-use-package 'magit-delta)
+        (add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1)))
+        (setq magit-delta-default-dark-theme "Dracula")
+        (setq magit-delta-default-light-theme "GitHub"))
+    ;; Fallback: Enable enhanced built-in syntax highlighting
+    (setq magit-diff-paint-whitespace t
+          magit-diff-highlight-trailing t
+          magit-diff-refine-ignore-whitespace nil
+          magit-diff-highlight-hunk-body t))
 
   ;; Hint: customize `magit-repository-directories' so that you can use C-u M-F12 to
   ;; quickly open magit on any one of your projects.
