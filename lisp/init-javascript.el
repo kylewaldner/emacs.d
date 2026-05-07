@@ -27,8 +27,13 @@
                   (json "https://github.com/tree-sitter/tree-sitter-json" "master" "src"))))
 
   ;; Auto-install grammars if not available
+  ;; Also check if .dylib exists on disk to avoid re-compiling grammars
+  ;; that compiled successfully but have an ABI mismatch with this Emacs build
   (dolist (lang '(javascript typescript tsx json))
-    (unless (treesit-language-available-p lang)
+    (unless (or (treesit-language-available-p lang)
+                (file-exists-p (expand-file-name
+                                (format "libtree-sitter-%s.dylib" lang)
+                                (locate-user-emacs-file "tree-sitter"))))
       (message "Installing %s tree-sitter grammar..." lang)
       (condition-case err
           (treesit-install-language-grammar lang)

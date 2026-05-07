@@ -140,6 +140,7 @@
 (require 'init-chat)
 (require 'init-proto)
 (require 'init-graphql)
+(require 'init-workbench)
 
 ;;(require 'init-twitter)
 ;; (require 'init-mu)
